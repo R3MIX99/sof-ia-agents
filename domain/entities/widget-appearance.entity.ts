@@ -24,6 +24,7 @@ export interface WidgetAppearance {
   companyTagline: string | null;
   initialMessage: string;
   suggestedMessages: string[];
+  suggestedMessageColor: string;
   position: WidgetPosition;
   windowWidth: number;
   windowHeight: number;
@@ -37,6 +38,7 @@ export interface WidgetAppearance {
   // Pie del widget: un único enlace centrado (etiqueta + URL).
   footerLinkUrl: string | null;
   footerLinkLabel: string | null;
+  footerLinkColor: string;
   createdAt: Date;
   updatedAt: Date;
 }

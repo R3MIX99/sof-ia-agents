@@ -26,6 +26,7 @@ function toEntity(row: WidgetAppearanceRow): WidgetAppearance {
     companyTagline: row.company_tagline,
     initialMessage: row.initial_message,
     suggestedMessages: (row.suggested_messages ?? []) as string[],
+    suggestedMessageColor: row.suggested_message_color,
     position: row.position as WidgetAppearance["position"],
     windowWidth: row.window_width,
     windowHeight: row.window_height,
@@ -38,6 +39,7 @@ function toEntity(row: WidgetAppearanceRow): WidgetAppearance {
     launcherShape: row.launcher_shape as WidgetAppearance["launcherShape"],
     footerLinkUrl: row.footer_link_url,
     footerLinkLabel: row.footer_link_label,
+    footerLinkColor: row.footer_link_color,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
@@ -93,6 +95,8 @@ export class SupabaseWidgetAppearanceRepository {
       patch.initial_message = input.initialMessage;
     if (input.suggestedMessages !== undefined)
       patch.suggested_messages = input.suggestedMessages as Json;
+    if (input.suggestedMessageColor !== undefined)
+      patch.suggested_message_color = input.suggestedMessageColor;
     if (input.position !== undefined) patch.position = input.position;
     if (input.windowWidth !== undefined) patch.window_width = input.windowWidth;
     if (input.windowHeight !== undefined)
@@ -114,6 +118,8 @@ export class SupabaseWidgetAppearanceRepository {
       patch.footer_link_url = input.footerLinkUrl;
     if (input.footerLinkLabel !== undefined)
       patch.footer_link_label = input.footerLinkLabel;
+    if (input.footerLinkColor !== undefined)
+      patch.footer_link_color = input.footerLinkColor;
 
     const { data, error } = await this.client
       .from("widget_appearance")

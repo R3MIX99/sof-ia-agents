@@ -207,6 +207,11 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
             />
           </div>
         </div>
+        <ColorPicker
+          label="Color del enlace"
+          value={appearance.footerLinkColor}
+          onChange={(value) => onChange({ footerLinkColor: value })}
+        />
       </section>
 
       <section className="space-y-4">
@@ -229,6 +234,11 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
             onChange={(event) => updateSuggestedMessages(event.target.value)}
           />
         </div>
+        <ColorPicker
+          label="Color de los mensajes sugeridos"
+          value={appearance.suggestedMessageColor}
+          onChange={(value) => onChange({ suggestedMessageColor: value })}
+        />
       </section>
 
       <section className="space-y-4">

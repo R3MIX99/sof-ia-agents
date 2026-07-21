@@ -370,18 +370,21 @@ export function WidgetTestChat() {
               </form>
 
               {hasFooter && (
-                <div className="px-4 pt-2 pb-4 text-center text-[11px]">
+                <div
+                  className="px-4 pt-2 pb-4 text-center text-[11px]"
+                  style={{ color: appearance?.footerLinkColor }}
+                >
                   {appearance?.footerLinkUrl ? (
                     <a
                       href={appearance.footerLinkUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="opacity-70 hover:underline"
+                      className="opacity-85 hover:underline"
                     >
                       {appearance.footerLinkLabel || appearance.footerLinkUrl}
                     </a>
                   ) : (
-                    <span className="opacity-70">{appearance?.footerLinkLabel}</span>
+                    <span className="opacity-85">{appearance?.footerLinkLabel}</span>
                   )}
                 </div>
               )}

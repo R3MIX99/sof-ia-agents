@@ -809,6 +809,7 @@ export type Database = {
           company_tagline: string | null
           created_at: string
           font_family: string
+          footer_link_color: string
           footer_link_label: string | null
           footer_link_url: string | null
           header_subtitle: string | null
@@ -822,6 +823,7 @@ export type Database = {
           primary_color: string
           shadow_style: string
           spacing_scale: string
+          suggested_message_color: string
           suggested_messages: Json
           text_color: string
           theme_mode: string
@@ -840,6 +842,7 @@ export type Database = {
           company_tagline?: string | null
           created_at?: string
           font_family?: string
+          footer_link_color?: string
           footer_link_label?: string | null
           footer_link_url?: string | null
           header_subtitle?: string | null
@@ -853,6 +856,7 @@ export type Database = {
           primary_color?: string
           shadow_style?: string
           spacing_scale?: string
+          suggested_message_color?: string
           suggested_messages?: Json
           text_color?: string
           theme_mode?: string
@@ -871,6 +875,7 @@ export type Database = {
           company_tagline?: string | null
           created_at?: string
           font_family?: string
+          footer_link_color?: string
           footer_link_label?: string | null
           footer_link_url?: string | null
           header_subtitle?: string | null
@@ -884,6 +889,7 @@ export type Database = {
           primary_color?: string
           shadow_style?: string
           spacing_scale?: string
+          suggested_message_color?: string
           suggested_messages?: Json
           text_color?: string
           theme_mode?: string

@@ -391,12 +391,12 @@
       spacing.padding +
       " .5rem;}\n" +
       ".sofia-suggested button{border:1px solid " +
-      appearance.primaryColor +
+      appearance.suggestedMessageColor +
       ";color:" +
-      appearance.primaryColor +
+      appearance.suggestedMessageColor +
       ";background:transparent;border-radius:999px;padding:.3rem .7rem;font-size:.75rem;cursor:pointer;}\n" +
       ".sofia-suggested button:hover{background:" +
-      appearance.primaryColor +
+      appearance.suggestedMessageColor +
       ";color:#fff;}\n" +
       ".sofia-form{display:flex;align-items:flex-end;gap:.5rem;padding:.625rem;}\n" +
       ".sofia-input{flex:1;resize:none;border:1px solid rgba(127,127,127,.3);border-radius:.5rem;padding:.5rem .625rem;font-family:inherit;font-size:1rem;background:transparent;color:inherit;max-height:96px;overflow-y:hidden;}\n" +
@@ -413,11 +413,14 @@
       ".sofia-typing span:nth-child(3){animation-delay:.4s;}\n" +
       "@keyframes sofia-blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}\n" +
       ".sofia-footer{text-align:center;padding:.5rem 1rem .9rem;font-size:.7rem;}\n" +
-      ".sofia-footer a{color:inherit;opacity:.7;text-decoration:none;}\n" +
+      ".sofia-footer a{color:" +
+      appearance.footerLinkColor +
+      ";opacity:.85;text-decoration:none;}\n" +
       ".sofia-footer a:hover{text-decoration:underline;}\n" +
       "@media (max-width:520px){.sofia-window{width:100vw !important;height:100vh !important;max-width:100vw;max-height:100vh;border-radius:0;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;}}\n" +
       (appearance.animationsEnabled
         ? ".sofia-window{animation-name:sofia-window-in;animation-duration:.2s;animation-timing-function:ease-out;animation-delay:.15s;animation-fill-mode:backwards;}@keyframes sofia-window-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}\n" +
+          ".sofia-window.sofia-closing{animation-name:sofia-window-out;animation-duration:.2s;animation-timing-function:ease-in;animation-fill-mode:forwards;}@keyframes sofia-window-out{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(8px);}}\n" +
           ".sofia-bubble{animation:sofia-bubble-in .2s ease-out;}@keyframes sofia-bubble-in{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}\n"
         : "")
     );
@@ -537,12 +540,33 @@
 
     root.appendChild(windowEl);
 
+    var closeTimeoutId = null;
     function toggle(open) {
-      var shouldOpen = typeof open === "boolean" ? open : windowEl.classList.contains("sofia-hidden");
-      windowEl.classList.toggle("sofia-hidden", !shouldOpen);
+      var isHidden = windowEl.classList.contains("sofia-hidden");
+      var shouldOpen = typeof open === "boolean" ? open : isHidden;
+
       if (shouldOpen) {
+        if (closeTimeoutId) {
+          clearTimeout(closeTimeoutId);
+          closeTimeoutId = null;
+        }
+        windowEl.classList.remove("sofia-closing");
+        windowEl.classList.remove("sofia-hidden");
         textarea.focus();
         messagesEl.scrollTop = messagesEl.scrollHeight;
+        return;
+      }
+
+      if (isHidden || closeTimeoutId) return;
+      if (config.appearance.animationsEnabled) {
+        windowEl.classList.add("sofia-closing");
+        closeTimeoutId = setTimeout(function () {
+          windowEl.classList.add("sofia-hidden");
+          windowEl.classList.remove("sofia-closing");
+          closeTimeoutId = null;
+        }, 200);
+      } else {
+        windowEl.classList.add("sofia-hidden");
       }
     }
 
