@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { Send, X } from "lucide-react";
 import { useWidgetDetail } from "@/context/widget-detail-context";
 import { apiFetch, ApiClientError } from "@/lib/http/api-client";
 import type { TestChatResult } from "@/services/widgets/widget-test-chat.service";
 import { LAUNCHER_ICON_MAP } from "@/lib/constants/widget-launcher-icons";
+import { toFontFamilyStack } from "@/lib/constants/widget-fonts";
 import { cn } from "@/lib/utils";
 
 interface TestMessage {
@@ -20,6 +21,14 @@ const SHADOW_STYLES: Record<string, string> = {
   suave: "0 4px 16px rgba(0,0,0,0.16)",
   pronunciada: "0 20px 40px rgba(0,0,0,0.36)",
 };
+
+const SPACING_SCALES: Record<string, { padding: string; gap: string }> = {
+  compacto: { padding: "0.5rem", gap: "0.375rem" },
+  normal: { padding: "1rem", gap: "0.625rem" },
+  amplio: { padding: "1.5rem", gap: "1rem" },
+};
+
+const CLOSE_ANIMATION_MS = 200;
 
 function TypingBubble({ backgroundColor }: { backgroundColor: string }) {
   return (
@@ -42,9 +51,11 @@ function TypingBubble({ backgroundColor }: { backgroundColor: string }) {
 export function WidgetTestChat() {
   const { widget, appearance } = useWidgetDetail();
   const [isOpen, setIsOpen] = useState(false);
+  const [isRendered, setIsRendered] = useState(false);
   const [messages, setMessages] = useState<TestMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   if (!widget) return null;
 
@@ -54,6 +65,10 @@ export function WidgetTestChat() {
   const shadow = appearance
     ? (SHADOW_STYLES[appearance.shadowStyle] ?? SHADOW_STYLES.suave)
     : SHADOW_STYLES.suave;
+  const spacing = appearance
+    ? (SPACING_SCALES[appearance.spacingScale] ?? SPACING_SCALES.normal)
+    : SPACING_SCALES.normal;
+  const fontFamily = appearance ? toFontFamilyStack(appearance.fontFamily) : undefined;
   const launcherColor = appearance?.launcherColor ?? "#111827";
   const launcherShapeClass =
     appearance?.launcherShape === "cuadrado" ? "rounded-2xl" : "rounded-full";
@@ -61,9 +76,34 @@ export function WidgetTestChat() {
   const userBubbleColor = appearance?.userBubbleColor ?? "#111827";
   const assistantBubbleColor = appearance?.assistantBubbleColor ?? "#f3f4f6";
   const hasFooter = Boolean(appearance?.footerLinkLabel || appearance?.footerLinkUrl);
-  const entranceClass = appearance?.animationsEnabled
+  const animationsEnabled = appearance?.animationsEnabled ?? true;
+  const entranceClass = animationsEnabled
     ? "animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 fill-mode-backwards"
     : "";
+  const exitClass = animationsEnabled
+    ? "animate-out fade-out slide-out-to-bottom-2 duration-200"
+    : "";
+
+  function openPanel() {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setIsRendered(true);
+    setIsOpen(true);
+  }
+
+  function closePanel() {
+    setIsOpen(false);
+    if (animationsEnabled) {
+      closeTimeoutRef.current = setTimeout(() => {
+        setIsRendered(false);
+        closeTimeoutRef.current = null;
+      }, CLOSE_ANIMATION_MS);
+    } else {
+      setIsRendered(false);
+    }
+  }
 
   async function handleSend() {
     const trimmed = input.trim();
@@ -123,12 +163,12 @@ export function WidgetTestChat() {
 
   return (
     <>
-      {isOpen && (
+      {isRendered && (
         <div
           key="test-chat-window"
           className={cn(
             "fixed right-6 bottom-24 z-50 flex flex-col overflow-hidden",
-            entranceClass,
+            isOpen ? entranceClass : exitClass,
           )}
           style={{
             width: 400,
@@ -137,6 +177,7 @@ export function WidgetTestChat() {
             backgroundColor: appearance?.backgroundColor ?? "#ffffff",
             color: appearance?.textColor ?? "#111827",
             boxShadow: shadow,
+            fontFamily,
           }}
         >
           <div
@@ -156,13 +197,21 @@ export function WidgetTestChat() {
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-base font-medium">Modo de prueba</p>
-              <p className="truncate text-xs opacity-80">{widget.name}</p>
+              <p className="truncate text-base font-medium">
+                {appearance?.headerTitle || widget.name}
+              </p>
+              {appearance?.headerSubtitle ? (
+                <p className="truncate text-xs opacity-80">
+                  {appearance.headerSubtitle}
+                </p>
+              ) : (
+                <p className="truncate text-xs opacity-80">Modo de prueba</p>
+              )}
             </div>
             <button
               type="button"
               aria-label="Cerrar prueba"
-              onClick={() => setIsOpen(false)}
+              onClick={closePanel}
               className="shrink-0 opacity-85 hover:opacity-100"
             >
               <X className="size-4" />
@@ -186,7 +235,10 @@ export function WidgetTestChat() {
             </div>
           ) : (
             <>
-              <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-3">
+              <div
+                className="flex flex-1 flex-col overflow-y-auto"
+                style={{ padding: spacing.padding, gap: spacing.gap }}
+              >
                 {messages.length === 0 && (
                   <p className="text-sm text-muted-foreground">
                     Envía un mensaje para probar cómo responde este asistente.
@@ -230,7 +282,7 @@ export function WidgetTestChat() {
               >
                 <textarea
                   rows={1}
-                  className="max-h-24 flex-1 resize-none rounded-md border border-input bg-transparent px-2.5 py-2 text-base outline-none"
+                  className="max-h-24 flex-1 resize-none rounded-full border border-input bg-transparent px-4 py-2 text-base outline-none"
                   placeholder="Escribe un mensaje de prueba..."
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
@@ -271,7 +323,7 @@ export function WidgetTestChat() {
 
       <button
         type="button"
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={() => (isOpen ? closePanel() : openPanel())}
         aria-label={isOpen ? "Cerrar panel de prueba" : "Probar widget"}
         className={cn(
           "fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:brightness-110",
