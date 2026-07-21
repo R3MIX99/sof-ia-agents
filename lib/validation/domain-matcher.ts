@@ -1,7 +1,19 @@
 import type { WidgetDomain } from "@/domain/entities/widget-domain.entity";
 
-function normalizeHostname(value: string): string {
-  return value.trim().toLowerCase().replace(/^www\./, "");
+/**
+ * Normaliza un dominio ingresado por el usuario a un hostname desnudo,
+ * tolerando errores comunes de captura (pegar la URL completa con esquema,
+ * ruta o barra final) para que la comparación de origen nunca falle por un
+ * formato de almacenamiento inconsistente.
+ */
+export function normalizeHostname(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\//, "")
+    .split(/[/?#]/)[0]
+    .split(":")[0]
+    .replace(/^www\./, "");
 }
 
 /** Verifica que el origen de una solicitud pública del widget coincida con alguno de los dominios permitidos configurados (sección 13.4). */

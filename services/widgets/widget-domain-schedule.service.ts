@@ -7,6 +7,8 @@ import {
 } from "@/infrastructure/supabase/repositories/widget-schedule.repository";
 import type { WidgetDomain } from "@/domain/entities/widget-domain.entity";
 import type { WidgetSchedule } from "@/domain/entities/widget-schedule.entity";
+import { normalizeHostname } from "@/lib/validation/domain-matcher";
+import { ApiError } from "@/lib/http/api-error";
 
 /** Servicio de gestión de dominios y horarios (Fase 4, sección 15.9-15.10). */
 export class WidgetDomainScheduleService {
@@ -22,12 +24,23 @@ export class WidgetDomainScheduleService {
     return this.domains.findByWidgetId(widgetId);
   }
 
+  /** Acepta que el usuario pegue una URL completa (esquema, ruta, barra final) y la reduce al hostname desnudo antes de guardarla (sección 13.4). */
   async addDomain(
     widgetId: string,
     domain: string,
     isWildcard: boolean,
   ): Promise<WidgetDomain> {
-    return this.domains.create(widgetId, domain, isWildcard);
+    const normalized = normalizeHostname(domain);
+    if (!normalized) {
+      throw new ApiError(
+        "validation",
+        "invalid_field",
+        "El dominio ingresado no es válido.",
+        400,
+        { field: "domain" },
+      );
+    }
+    return this.domains.create(widgetId, normalized, isWildcard);
   }
 
   async removeDomain(id: string): Promise<void> {
