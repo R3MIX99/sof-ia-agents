@@ -417,7 +417,7 @@
       appearance.footerLinkColor +
       ";opacity:.85;text-decoration:none;}\n" +
       ".sofia-footer a:hover{text-decoration:underline;}\n" +
-      "@media (max-width:520px){.sofia-window{width:100vw !important;height:100vh !important;max-width:100vw;max-height:100vh;border-radius:0;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;}}\n" +
+      "@media (max-width:520px){.sofia-window{width:100vw !important;height:100vh !important;height:100dvh !important;max-width:100vw;max-height:100vh;max-height:100dvh;border-radius:0;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;padding-bottom:env(safe-area-inset-bottom);}}\n" +
       (appearance.animationsEnabled
         ? ".sofia-window{animation-name:sofia-window-in;animation-duration:.2s;animation-timing-function:ease-out;animation-delay:.15s;animation-fill-mode:backwards;}@keyframes sofia-window-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}\n" +
           ".sofia-window.sofia-closing{animation-name:sofia-window-out;animation-duration:.2s;animation-timing-function:ease-in;animation-fill-mode:forwards;}@keyframes sofia-window-out{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(8px);}}\n" +
@@ -540,6 +540,20 @@
 
     root.appendChild(windowEl);
 
+    var isMobileLayout = function () {
+      return window.matchMedia("(max-width: 520px)").matches;
+    };
+    /** En móvil, ancla la altura de la ventana a la del viewport visual para que el input y el pie no queden ocultos detrás del teclado. */
+    function syncViewportHeight() {
+      if (!window.visualViewport) return;
+      windowEl.style.height = isMobileLayout()
+        ? window.visualViewport.height + "px"
+        : "";
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", syncViewportHeight);
+    }
+
     var closeTimeoutId = null;
     function toggle(open) {
       var isHidden = windowEl.classList.contains("sofia-hidden");
@@ -552,7 +566,7 @@
         }
         windowEl.classList.remove("sofia-closing");
         windowEl.classList.remove("sofia-hidden");
-        textarea.focus();
+        syncViewportHeight();
         messagesEl.scrollTop = messagesEl.scrollHeight;
         return;
       }
