@@ -425,7 +425,7 @@
       ".sofia-header-restart{background:transparent;border:none;color:inherit;cursor:pointer;padding:.25rem;display:flex;opacity:.85;margin-left:auto;}\n" +
       ".sofia-header-close{background:transparent;border:none;color:inherit;cursor:pointer;padding:.25rem;display:flex;opacity:.85;}\n" +
       ".sofia-header-restart:hover,.sofia-header-close:hover{opacity:1;}\n" +
-      ".sofia-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:" +
+      ".sofia-messages{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:" +
       spacing.padding +
       ";gap:" +
       spacing.gap +
@@ -437,7 +437,7 @@
       ".sofia-greeting-logo{width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:.25rem;}\n" +
       ".sofia-greeting-name{font-size:1.0625rem;font-weight:700;margin:0;}\n" +
       ".sofia-greeting-tagline{font-size:.8125rem;opacity:.7;margin:0;}\n" +
-      ".sofia-bubble{max-width:85%;padding:.5rem .75rem;border-radius:.75rem;font-size:1rem;line-height:1.5;word-wrap:break-word;}\n" +
+      ".sofia-bubble{max-width:85%;padding:.5rem .75rem;border-radius:.75rem;font-size:.875rem;line-height:1.5;word-wrap:break-word;}\n" +
       ".sofia-bubble p{margin:0 0 .5rem 0;}\n" +
       ".sofia-bubble p:last-child{margin-bottom:0;}\n" +
       ".sofia-bubble ul,.sofia-bubble ol{margin:.25rem 0 .5rem 1.1rem;padding:0;}\n" +
@@ -464,12 +464,12 @@
       ".sofia-suggested button:hover{background:" +
       appearance.suggestedMessageColor +
       ";color:#fff;}\n" +
-      ".sofia-form{padding:.625rem;}\n" +
-      ".sofia-form-inner{display:flex;align-items:flex-end;gap:.25rem;border:1px solid rgba(127,127,127,.3);border-radius:999px;padding:.25rem .25rem .25rem 1rem;}\n" +
+      ".sofia-form{padding:.5rem 1.25rem;}\n" +
+      ".sofia-form-inner{display:flex;align-items:flex-end;gap:.25rem;border:1px solid rgba(127,127,127,.3);border-radius:999px;padding:.25rem .25rem .25rem .875rem;}\n" +
       ".sofia-form-inner:focus-within{outline:2px solid " +
       appearance.primaryColor +
       ";outline-offset:1px;}\n" +
-      ".sofia-input{flex:1;resize:none;border:none;padding:.4375rem 0;font-family:inherit;font-size:1rem;background:transparent;color:inherit;max-height:96px;overflow-y:hidden;}\n" +
+      ".sofia-input{flex:1;resize:none;border:none;padding:.4375rem 0;font-family:inherit;font-size:.875rem;background:transparent;color:inherit;max-height:96px;overflow-y:hidden;}\n" +
       ".sofia-input::placeholder{color:currentColor;opacity:.5;}\n" +
       ".sofia-input:focus{outline:none;}\n" +
       ".sofia-send{background:" +

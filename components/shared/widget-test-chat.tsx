@@ -285,7 +285,7 @@ export function WidgetTestChat() {
           ) : (
             <>
               <div
-                className="flex flex-1 flex-col overflow-y-auto"
+                className="flex min-h-0 flex-1 flex-col overflow-y-auto"
                 style={{ padding: spacing.padding, gap: spacing.gap }}
               >
                 {messages.length === 0 && (
@@ -312,7 +312,7 @@ export function WidgetTestChat() {
                     )}
                     {appearance?.initialMessage && (
                       <div
-                        className="mt-3 max-w-[85%] rounded-lg px-3 py-2 text-left text-base leading-normal"
+                        className="mt-3 max-w-[85%] rounded-lg px-3 py-2 text-left text-sm leading-normal"
                         style={{
                           backgroundColor: assistantBubbleColor,
                           color: assistantTextColor,
@@ -333,7 +333,7 @@ export function WidgetTestChat() {
                   <div
                     key={index}
                     className={cn(
-                      "max-w-[85%] rounded-lg px-3 py-2 text-base leading-normal",
+                      "max-w-[85%] rounded-lg px-3 py-2 text-sm leading-normal",
                       message.role === "usuario" && "self-end text-white",
                       message.role === "asistente" && "self-start",
                       message.role === "integración" &&
@@ -369,7 +369,7 @@ export function WidgetTestChat() {
               </div>
 
               <form
-                className="p-2.5"
+                className="px-5 py-2"
                 onSubmit={(event) => {
                   event.preventDefault();
                   handleSend();
@@ -378,7 +378,7 @@ export function WidgetTestChat() {
                 <div className="flex items-end gap-1 rounded-full border border-input py-1 pr-1 pl-4">
                   <textarea
                     rows={1}
-                    className="max-h-24 flex-1 resize-none bg-transparent py-1.5 text-base outline-none"
+                    className="max-h-24 flex-1 resize-none bg-transparent py-1.5 text-sm outline-none"
                     placeholder="Escribe un mensaje de prueba..."
                     value={input}
                     onChange={(event) => setInput(event.target.value)}
