@@ -62,7 +62,7 @@ export function WidgetTestChat() {
   const assistantBubbleColor = appearance?.assistantBubbleColor ?? "#f3f4f6";
   const hasFooter = Boolean(appearance?.footerLinkLabel || appearance?.footerLinkUrl);
   const entranceClass = appearance?.animationsEnabled
-    ? "animate-in fade-in slide-in-from-bottom-2 duration-300"
+    ? "animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 fill-mode-backwards"
     : "";
 
   async function handleSend() {
@@ -127,11 +127,12 @@ export function WidgetTestChat() {
         <div
           key="test-chat-window"
           className={cn(
-            "fixed right-6 bottom-24 z-50 flex w-80 flex-col overflow-hidden",
+            "fixed right-6 bottom-24 z-50 flex flex-col overflow-hidden",
             entranceClass,
           )}
           style={{
-            height: 500,
+            width: 400,
+            height: 600,
             borderRadius: appearance?.borderRadius ?? 16,
             backgroundColor: appearance?.backgroundColor ?? "#ffffff",
             color: appearance?.textColor ?? "#111827",
@@ -273,12 +274,12 @@ export function WidgetTestChat() {
         onClick={() => setIsOpen((open) => !open)}
         aria-label={isOpen ? "Cerrar panel de prueba" : "Probar widget"}
         className={cn(
-          "fixed right-6 bottom-6 z-50 flex size-14 items-center justify-center text-white",
+          "fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:brightness-110",
           launcherShapeClass,
         )}
         style={{ backgroundColor: launcherColor, boxShadow: shadow }}
       >
-        {isOpen ? <X className="size-6" /> : <LauncherIcon className="size-6" />}
+        {isOpen ? <X className="size-5" /> : <LauncherIcon className="size-5" />}
       </button>
     </>
   );
