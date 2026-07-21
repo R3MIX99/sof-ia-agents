@@ -1,0 +1,1 @@
+create index widget_integrations_integration_id_idx on public.widget_integrations (integration_id);
