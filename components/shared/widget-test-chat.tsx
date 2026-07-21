@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { useWidgetDetail } from "@/context/widget-detail-context";
 import { apiFetch, ApiClientError } from "@/lib/http/api-client";
 import type { TestChatResult } from "@/services/widgets/widget-test-chat.service";
@@ -20,6 +20,23 @@ const SHADOW_STYLES: Record<string, string> = {
   suave: "0 4px 16px rgba(0,0,0,0.16)",
   pronunciada: "0 20px 40px rgba(0,0,0,0.36)",
 };
+
+function TypingBubble({ backgroundColor }: { backgroundColor: string }) {
+  return (
+    <div
+      className="flex items-center gap-1 self-start rounded-lg px-3 py-2.5"
+      style={{ backgroundColor }}
+    >
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="size-1.5 animate-bounce rounded-full bg-current opacity-60"
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
+    </div>
+  );
+}
 
 /** Panel de prueba en vivo del widget (sección 11): IA real e integraciones n8n reales, sin persistir nada en sesiones/conversaciones/mensajes/eventos. Se monta una sola vez en el layout del detalle del widget, visible en todas sus pestañas. */
 export function WidgetTestChat() {
@@ -43,6 +60,10 @@ export function WidgetTestChat() {
   const primaryColor = appearance?.primaryColor ?? "#111827";
   const userBubbleColor = appearance?.userBubbleColor ?? "#111827";
   const assistantBubbleColor = appearance?.assistantBubbleColor ?? "#f3f4f6";
+  const hasFooter = Boolean(appearance?.footerLinkLabel || appearance?.footerLinkUrl);
+  const entranceClass = appearance?.animationsEnabled
+    ? "animate-in fade-in slide-in-from-bottom-2 duration-300"
+    : "";
 
   async function handleSend() {
     const trimmed = input.trim();
@@ -104,9 +125,13 @@ export function WidgetTestChat() {
     <>
       {isOpen && (
         <div
-          className="fixed right-6 bottom-24 z-50 flex w-80 flex-col overflow-hidden"
+          key="test-chat-window"
+          className={cn(
+            "fixed right-6 bottom-24 z-50 flex w-80 flex-col overflow-hidden",
+            entranceClass,
+          )}
           style={{
-            height: 480,
+            height: 500,
             borderRadius: appearance?.borderRadius ?? 16,
             backgroundColor: appearance?.backgroundColor ?? "#ffffff",
             color: appearance?.textColor ?? "#111827",
@@ -117,8 +142,20 @@ export function WidgetTestChat() {
             className="flex items-center gap-2 px-4 py-3"
             style={{ backgroundColor: primaryColor, color: "#ffffff" }}
           >
+            {widget.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={widget.logoUrl}
+                alt=""
+                className="size-8 shrink-0 rounded-full bg-white/15 object-cover"
+              />
+            ) : (
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-medium">
+                {widget.name.slice(0, 1).toUpperCase() || "W"}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">Modo de prueba</p>
+              <p className="truncate text-base font-medium">Modo de prueba</p>
               <p className="truncate text-xs opacity-80">{widget.name}</p>
             </div>
             <button
@@ -150,7 +187,7 @@ export function WidgetTestChat() {
             <>
               <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-3">
                 {messages.length === 0 && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     Envía un mensaje para probar cómo responde este asistente.
                   </p>
                 )}
@@ -158,7 +195,7 @@ export function WidgetTestChat() {
                   <div
                     key={index}
                     className={cn(
-                      "max-w-[85%] rounded-lg px-3 py-2 text-sm",
+                      "max-w-[85%] rounded-lg px-3 py-2 text-base leading-normal",
                       message.role === "usuario" && "self-end text-white",
                       message.role === "asistente" && "self-start",
                       message.role === "integración" &&
@@ -179,9 +216,7 @@ export function WidgetTestChat() {
                   </div>
                 ))}
                 {isSending && (
-                  <div className="flex items-center gap-1 self-start px-1 text-muted-foreground">
-                    <Loader2 className="size-3 animate-spin" />
-                  </div>
+                  <TypingBubble backgroundColor={assistantBubbleColor} />
                 )}
               </div>
 
@@ -194,7 +229,7 @@ export function WidgetTestChat() {
               >
                 <textarea
                   rows={1}
-                  className="max-h-24 flex-1 resize-none rounded-md border border-input bg-transparent px-2.5 py-2 text-sm outline-none"
+                  className="max-h-24 flex-1 resize-none rounded-md border border-input bg-transparent px-2.5 py-2 text-base outline-none"
                   placeholder="Escribe un mensaje de prueba..."
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
@@ -211,6 +246,23 @@ export function WidgetTestChat() {
                   <Send className="size-4" />
                 </button>
               </form>
+
+              {hasFooter && (
+                <div className="border-t border-black/5 px-4 py-2 text-center text-[11px]">
+                  {appearance?.footerLinkUrl ? (
+                    <a
+                      href={appearance.footerLinkUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="opacity-70 hover:underline"
+                    >
+                      {appearance.footerLinkLabel || appearance.footerLinkUrl}
+                    </a>
+                  ) : (
+                    <span className="opacity-70">{appearance?.footerLinkLabel}</span>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>

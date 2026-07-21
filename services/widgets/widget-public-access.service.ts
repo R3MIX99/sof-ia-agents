@@ -29,6 +29,8 @@ export interface PublicWidgetConfig {
   widgetId: string;
   name: string;
   language: string;
+  logoUrl: string | null;
+  avatarUrl: string | null;
   availableNow: boolean;
   outOfScheduleBehavior: WidgetSchedule["outOfScheduleBehavior"];
   persistConversationAcrossSessions: boolean;
@@ -89,6 +91,8 @@ export class WidgetPublicAccessService {
       widgetId: access.widget.id,
       name: access.widget.name,
       language: access.widget.language,
+      logoUrl: access.widget.logoUrl,
+      avatarUrl: access.widget.avatarUrl,
       availableNow: access.availableNow,
       outOfScheduleBehavior: access.outOfScheduleBehavior,
       persistConversationAcrossSessions:
