@@ -108,6 +108,14 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
     onChange({ suggestedMessages: messages });
   }
 
+  function updateInitialMessages(value: string) {
+    const messages = value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    onChange({ initialMessages: messages });
+  }
+
   return (
     <div className="space-y-8">
       <section className="space-y-4">
@@ -274,11 +282,16 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
       <section className="space-y-4">
         <h3 className="text-sm font-medium text-foreground">Conversación</h3>
         <div className="space-y-1.5">
-          <Label htmlFor="initial-message">Mensaje inicial</Label>
+          <Label htmlFor="initial-messages">Mensajes iniciales (uno por línea)</Label>
+          <p className="text-xs text-muted-foreground">
+            Cada línea se envía como un mensaje independiente del asistente, en
+            orden y en su propia burbuja, antes de que el visitante escriba
+            algo.
+          </p>
           <Textarea
-            id="initial-message"
-            value={appearance.initialMessage}
-            onChange={(event) => onChange({ initialMessage: event.target.value })}
+            id="initial-messages"
+            value={appearance.initialMessages.join("\n")}
+            onChange={(event) => updateInitialMessages(event.target.value)}
           />
         </div>
         <div className="space-y-1.5">

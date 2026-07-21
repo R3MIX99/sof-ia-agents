@@ -728,8 +728,8 @@
     return bubble;
   }
 
-  /** Revela un texto progresivamente en una burbuja ya insertada, simulando que se escribe en vivo; al terminar, aplica el renderizado de Markdown completo. */
-  function typewriterReveal(bubble, text, messagesEl) {
+  /** Revela un texto progresivamente en una burbuja ya insertada, simulando que se escribe en vivo; al terminar, aplica el renderizado de Markdown completo y llama a onComplete si se indica. */
+  function typewriterReveal(bubble, text, messagesEl, onComplete) {
     var full = String(text == null ? "" : text);
     var i = 0;
     var step = Math.max(1, Math.round(full.length / 60));
@@ -741,8 +741,22 @@
         clearInterval(interval);
         bubble.innerHTML = renderMarkdown(full);
         if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+        if (onComplete) onComplete();
       }
     }, 12);
+  }
+
+  /** Revela una lista de mensajes en orden, cada uno en su propia burbuja, esperando a que termine el anterior antes de empezar el siguiente. */
+  function typewriterRevealSequence(messages, messagesEl) {
+    var index = 0;
+    function next() {
+      if (index >= messages.length) return;
+      var bubble = appendBubble(messagesEl, "asistente", "", false);
+      var text = messages[index];
+      index += 1;
+      typewriterReveal(bubble, text, messagesEl, next);
+    }
+    next();
   }
 
   function appendTypingIndicator(messagesEl) {
@@ -798,9 +812,8 @@
               ui.textarea.disabled = true;
               ui.sendBtn.disabled = true;
             } else {
-              if (config.appearance.initialMessage) {
-                var greetingBubble = appendBubble(ui.messagesEl, "asistente", "", false);
-                typewriterReveal(greetingBubble, config.appearance.initialMessage, ui.messagesEl);
+              if ((config.appearance.initialMessages || []).length > 0) {
+                typewriterRevealSequence(config.appearance.initialMessages, ui.messagesEl);
               }
               (config.appearance.suggestedMessages || []).slice(0, 4).forEach(function (suggestion) {
                 var btn = document.createElement("button");

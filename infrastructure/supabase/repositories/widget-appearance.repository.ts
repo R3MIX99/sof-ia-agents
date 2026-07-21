@@ -25,7 +25,7 @@ function toEntity(row: WidgetAppearanceRow): WidgetAppearance {
     headerSubtitle: row.header_subtitle,
     companyName: row.company_name,
     companyTagline: row.company_tagline,
-    initialMessage: row.initial_message,
+    initialMessages: (row.initial_messages ?? []) as string[],
     suggestedMessages: (row.suggested_messages ?? []) as string[],
     suggestedMessageColor: row.suggested_message_color,
     position: row.position as WidgetAppearance["position"],
@@ -96,8 +96,8 @@ export class SupabaseWidgetAppearanceRepository {
     if (input.companyName !== undefined) patch.company_name = input.companyName;
     if (input.companyTagline !== undefined)
       patch.company_tagline = input.companyTagline;
-    if (input.initialMessage !== undefined)
-      patch.initial_message = input.initialMessage;
+    if (input.initialMessages !== undefined)
+      patch.initial_messages = input.initialMessages as Json;
     if (input.suggestedMessages !== undefined)
       patch.suggested_messages = input.suggestedMessages as Json;
     if (input.suggestedMessageColor !== undefined)

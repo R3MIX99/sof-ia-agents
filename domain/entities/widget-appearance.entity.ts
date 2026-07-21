@@ -25,7 +25,8 @@ export interface WidgetAppearance {
   // Pantalla de bienvenida centrada (logo + nombre + frase) mostrada antes del primer mensaje.
   companyName: string | null;
   companyTagline: string | null;
-  initialMessage: string;
+  // Mensajes que el asistente envía en orden, cada uno en su propia burbuja, antes de que el visitante escriba algo.
+  initialMessages: string[];
   suggestedMessages: string[];
   suggestedMessageColor: string;
   position: WidgetPosition;

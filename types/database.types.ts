@@ -816,7 +816,7 @@ export type Database = {
           header_subtitle: string | null
           header_title: string
           id: string
-          initial_message: string
+          initial_messages: Json
           launcher_color: string
           launcher_icon: string
           launcher_label: string | null
@@ -852,7 +852,7 @@ export type Database = {
           header_subtitle?: string | null
           header_title?: string
           id?: string
-          initial_message?: string
+          initial_messages?: Json
           launcher_color?: string
           launcher_icon?: string
           launcher_label?: string | null
@@ -888,7 +888,7 @@ export type Database = {
           header_subtitle?: string | null
           header_title?: string
           id?: string
-          initial_message?: string
+          initial_messages?: Json
           launcher_color?: string
           launcher_icon?: string
           launcher_label?: string | null

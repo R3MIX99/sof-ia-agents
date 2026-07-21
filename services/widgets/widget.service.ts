@@ -81,7 +81,7 @@ export class WidgetService {
         fontFamily: originalAppearance.fontFamily,
         headerTitle: originalAppearance.headerTitle,
         headerSubtitle: originalAppearance.headerSubtitle,
-        initialMessage: originalAppearance.initialMessage,
+        initialMessages: originalAppearance.initialMessages,
         suggestedMessages: originalAppearance.suggestedMessages,
         position: originalAppearance.position,
         windowWidth: originalAppearance.windowWidth,

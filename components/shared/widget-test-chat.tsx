@@ -32,7 +32,13 @@ const SPACING_SCALES: Record<string, { padding: string; gap: string }> = {
 const CLOSE_ANIMATION_MS = 200;
 
 /** Revela un texto progresivamente, simulando que se escribe en vivo; se monta una vez por burbuja nueva. */
-function TypewriterText({ text }: { text: string }) {
+function TypewriterText({
+  text,
+  onComplete,
+}: {
+  text: string;
+  onComplete?: () => void;
+}) {
   const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
@@ -42,9 +48,13 @@ function TypewriterText({ text }: { text: string }) {
     const id = setInterval(() => {
       revealed += step;
       setVisibleCount(Math.min(revealed, text.length));
-      if (revealed >= text.length) clearInterval(id);
+      if (revealed >= text.length) {
+        clearInterval(id);
+        onComplete?.();
+      }
     }, 12);
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
   return <>{text.slice(0, visibleCount)}</>;
@@ -81,6 +91,7 @@ export function WidgetTestChat() {
   const [messages, setMessages] = useState<TestMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [greetingStep, setGreetingStep] = useState(1);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -144,6 +155,7 @@ export function WidgetTestChat() {
   function resetChat() {
     setMessages([]);
     setInput("");
+    setGreetingStep(1);
   }
 
   async function handleSend() {
@@ -310,23 +322,41 @@ export function WidgetTestChat() {
                         )}
                       </>
                     )}
-                    {appearance?.initialMessage && (
-                      <div
-                        className="mt-3 max-w-[85%] rounded-lg px-3 py-2 text-left text-sm leading-normal"
-                        style={{
-                          backgroundColor: assistantBubbleColor,
-                          color: assistantTextColor,
-                        }}
-                      >
-                        <TypewriterText text={appearance.initialMessage} />
+                    {appearance && appearance.initialMessages.length > 0 && (
+                      <div className="mt-3 flex flex-col items-center gap-2">
+                        {appearance.initialMessages
+                          .slice(0, greetingStep)
+                          .map((message, index) => (
+                            <div
+                              key={index}
+                              className="max-w-[85%] rounded-lg px-3 py-2 text-left text-sm leading-normal"
+                              style={{
+                                backgroundColor: assistantBubbleColor,
+                                color: assistantTextColor,
+                              }}
+                            >
+                              <TypewriterText
+                                text={message}
+                                onComplete={() =>
+                                  setGreetingStep((step) =>
+                                    Math.min(
+                                      step + 1,
+                                      appearance.initialMessages.length,
+                                    ),
+                                  )
+                                }
+                              />
+                            </div>
+                          ))}
                       </div>
                     )}
-                    {!appearance?.companyName && !appearance?.initialMessage && (
-                      <p className="text-sm text-muted-foreground">
-                        Envía un mensaje para probar cómo responde este
-                        asistente.
-                      </p>
-                    )}
+                    {!appearance?.companyName &&
+                      !appearance?.initialMessages.length && (
+                        <p className="text-sm text-muted-foreground">
+                          Envía un mensaje para probar cómo responde este
+                          asistente.
+                        </p>
+                      )}
                   </div>
                 )}
                 {messages.map((message, index) => (
