@@ -14,7 +14,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FONT_FAMILY_OPTIONS } from "@/lib/constants/widget-fonts";
-import { LAUNCHER_ICON_OPTIONS } from "@/lib/constants/widget-launcher-icons";
+import {
+  LAUNCHER_ICON_MAP,
+  LAUNCHER_ICON_OPTIONS,
+} from "@/lib/constants/widget-launcher-icons";
+import { cn } from "@/lib/utils";
 
 export type WidgetAppearancePatch = Partial<
   Omit<WidgetAppearance, "id" | "widgetId" | "createdAt" | "updatedAt">
@@ -24,6 +28,15 @@ export interface ThemeEditorProps {
   appearance: WidgetAppearance;
   onChange: (patch: WidgetAppearancePatch) => void;
 }
+
+const LAUNCHER_TYPES: {
+  value: WidgetAppearance["launcherType"];
+  label: string;
+}[] = [
+  { value: "icono", label: "Solo ícono" },
+  { value: "texto", label: "Solo texto" },
+  { value: "icono_texto", label: "Ícono y texto" },
+];
 
 const POSITIONS: { value: WidgetAppearance["position"]; label: string }[] = [
   { value: "inferior-derecha", label: "Inferior derecha" },
@@ -245,44 +258,123 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
         <h3 className="text-sm font-medium text-foreground">
           Botón flotante
         </h3>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>Ícono</Label>
-            <Select
-              value={appearance.launcherIcon}
-              onValueChange={(value) => onChange({ launcherIcon: value })}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LAUNCHER_ICON_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+        <div className="space-y-1.5">
+          <Label>Tipo de botón</Label>
+          <div className="grid grid-cols-3 gap-3">
+            {LAUNCHER_TYPES.map((option) => {
+              const LauncherIcon =
+                LAUNCHER_ICON_MAP[appearance.launcherIcon] ??
+                LAUNCHER_ICON_MAP["message-circle"];
+              const label = appearance.launcherLabel || "Sof.ia";
+              const selected = appearance.launcherType === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onChange({ launcherType: option.value })}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center gap-3 rounded-lg border p-4",
+                    selected
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/50",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "absolute top-2 left-2 size-3.5 rounded-full border",
+                      selected
+                        ? "border-primary bg-primary"
+                        : "border-muted-foreground/40",
+                    )}
+                  />
+                  {option.value === "icono" && (
+                    <span
+                      className="flex size-10 items-center justify-center rounded-full text-white"
+                      style={{ backgroundColor: appearance.launcherColor }}
+                    >
+                      <LauncherIcon className="size-5" />
+                    </span>
+                  )}
+                  {option.value === "texto" && (
+                    <span
+                      className="rounded-full px-4 py-2 text-xs font-medium text-white"
+                      style={{ backgroundColor: appearance.launcherColor }}
+                    >
+                      {label}
+                    </span>
+                  )}
+                  {option.value === "icono_texto" && (
+                    <span
+                      className="flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium text-white"
+                      style={{ backgroundColor: appearance.launcherColor }}
+                    >
+                      <LauncherIcon className="size-4" />
+                      {label}
+                    </span>
+                  )}
+                  <span className="text-xs text-muted-foreground">
                     {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </span>
+                </button>
+              );
+            })}
           </div>
+        </div>
+        {appearance.launcherType !== "icono" && (
           <div className="space-y-1.5">
-            <Label>Forma</Label>
-            <Select
-              value={appearance.launcherShape}
-              onValueChange={(value) =>
-                onChange({
-                  launcherShape: value as WidgetAppearance["launcherShape"],
-                })
+            <Label htmlFor="launcher-label">Texto del botón</Label>
+            <Input
+              id="launcher-label"
+              placeholder="Sof.ia"
+              value={appearance.launcherLabel ?? ""}
+              onChange={(event) =>
+                onChange({ launcherLabel: event.target.value || null })
               }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="circular">Circular</SelectItem>
-                <SelectItem value="cuadrado">Cuadrado redondeado</SelectItem>
-              </SelectContent>
-            </Select>
+            />
           </div>
+        )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {appearance.launcherType !== "texto" && (
+            <div className="space-y-1.5">
+              <Label>Ícono</Label>
+              <Select
+                value={appearance.launcherIcon}
+                onValueChange={(value) => onChange({ launcherIcon: value })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LAUNCHER_ICON_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {appearance.launcherType === "icono" && (
+            <div className="space-y-1.5">
+              <Label>Forma</Label>
+              <Select
+                value={appearance.launcherShape}
+                onValueChange={(value) =>
+                  onChange({
+                    launcherShape: value as WidgetAppearance["launcherShape"],
+                  })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="circular">Circular</SelectItem>
+                  <SelectItem value="cuadrado">Cuadrado redondeado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
         <ColorPicker
           label="Color del botón flotante"

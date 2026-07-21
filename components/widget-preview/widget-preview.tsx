@@ -139,19 +139,46 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
         </div>
 
         <div className="flex flex-col items-center gap-2">
-          <div
-            key={`launcher-${replayKey}`}
-            className={cn(
-              "flex size-14 items-center justify-center text-white",
-              appearance.launcherShape === "circular"
-                ? "rounded-full"
-                : "rounded-2xl",
-              entranceClass,
-            )}
-            style={{ backgroundColor: appearance.launcherColor, boxShadow: shadow }}
-          >
-            <LauncherIcon className="size-6" />
-          </div>
+          {appearance.launcherType === "icono" && (
+            <div
+              key={`launcher-${replayKey}`}
+              className={cn(
+                "flex size-14 items-center justify-center text-white",
+                appearance.launcherShape === "circular"
+                  ? "rounded-full"
+                  : "rounded-2xl",
+                entranceClass,
+              )}
+              style={{ backgroundColor: appearance.launcherColor, boxShadow: shadow }}
+            >
+              <LauncherIcon className="size-6" />
+            </div>
+          )}
+          {appearance.launcherType === "texto" && (
+            <div
+              key={`launcher-${replayKey}`}
+              className={cn(
+                "flex h-14 items-center rounded-full px-6 text-sm font-medium text-white",
+                entranceClass,
+              )}
+              style={{ backgroundColor: appearance.launcherColor, boxShadow: shadow }}
+            >
+              {appearance.launcherLabel || widgetName}
+            </div>
+          )}
+          {appearance.launcherType === "icono_texto" && (
+            <div
+              key={`launcher-${replayKey}`}
+              className={cn(
+                "flex h-14 items-center gap-2 rounded-full px-5 text-sm font-medium text-white",
+                entranceClass,
+              )}
+              style={{ backgroundColor: appearance.launcherColor, boxShadow: shadow }}
+            >
+              <LauncherIcon className="size-5" />
+              {appearance.launcherLabel || widgetName}
+            </div>
+          )}
           <p className="text-xs text-muted-foreground">
             Botón flotante (widget cerrado)
           </p>

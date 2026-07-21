@@ -5,6 +5,7 @@ export type WidgetPosition =
   | "superior-derecha"
   | "superior-izquierda";
 export type WidgetLauncherShape = "circular" | "cuadrado";
+export type WidgetLauncherType = "icono" | "texto" | "icono_texto";
 
 export interface WidgetAppearance {
   id: string;
@@ -35,6 +36,9 @@ export interface WidgetAppearance {
   launcherIcon: string;
   launcherColor: string;
   launcherShape: WidgetLauncherShape;
+  launcherType: WidgetLauncherType;
+  // Texto mostrado cuando launcherType es "texto" o "icono_texto"; si está vacío, se usa el nombre del widget.
+  launcherLabel: string | null;
   // Pie del widget: un único enlace centrado (etiqueta + URL).
   footerLinkUrl: string | null;
   footerLinkLabel: string | null;

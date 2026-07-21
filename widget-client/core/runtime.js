@@ -357,14 +357,16 @@
       ";}\n" +
       ".sofia-launcher{position:fixed;" +
       positionCss(appearance.position) +
-      "width:48px;height:48px;border-radius:" +
-      launcherRadius +
-      ";background:" +
+      "background:" +
       appearance.launcherColor +
-      ";color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:" +
+      ";color:#fff;border:none;display:flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer;box-shadow:" +
       shadow +
       ";transition:transform .2s ease,filter .2s ease;z-index:2147483000;}\n" +
       ".sofia-launcher:hover{transform:scale(1.1);filter:brightness(1.1);}\n" +
+      ".sofia-launcher-icon{width:48px;height:48px;border-radius:" +
+      launcherRadius +
+      ";}\n" +
+      ".sofia-launcher-label{height:48px;padding:0 1.25rem;border-radius:999px;font-size:.875rem;font-weight:600;white-space:nowrap;}\n" +
       ".sofia-window{position:fixed;" +
       positionCss(appearance.position, true) +
       "width:" +
@@ -429,15 +431,17 @@
       ".sofia-suggested button:hover{background:" +
       appearance.suggestedMessageColor +
       ";color:#fff;}\n" +
-      ".sofia-form{display:flex;align-items:flex-end;gap:.5rem;padding:.625rem;}\n" +
-      ".sofia-input{flex:1;resize:none;border:1px solid rgba(127,127,127,.3);border-radius:.5rem;padding:.5rem .625rem;font-family:inherit;font-size:1rem;background:transparent;color:inherit;max-height:96px;overflow-y:hidden;}\n" +
-      ".sofia-input::placeholder{color:currentColor;opacity:.5;}\n" +
-      ".sofia-input:focus{outline:2px solid " +
+      ".sofia-form{padding:.625rem;}\n" +
+      ".sofia-form-inner{display:flex;align-items:flex-end;gap:.25rem;border:1px solid rgba(127,127,127,.3);border-radius:999px;padding:.25rem .25rem .25rem 1rem;}\n" +
+      ".sofia-form-inner:focus-within{outline:2px solid " +
       appearance.primaryColor +
       ";outline-offset:1px;}\n" +
+      ".sofia-input{flex:1;resize:none;border:none;padding:.4375rem 0;font-family:inherit;font-size:1rem;background:transparent;color:inherit;max-height:96px;overflow-y:hidden;}\n" +
+      ".sofia-input::placeholder{color:currentColor;opacity:.5;}\n" +
+      ".sofia-input:focus{outline:none;}\n" +
       ".sofia-send{background:" +
       appearance.primaryColor +
-      ";color:#fff;border:none;border-radius:.5rem;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}\n" +
+      ";color:#fff;border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}\n" +
       ".sofia-send:disabled{opacity:.5;cursor:default;}\n" +
       ".sofia-typing{display:flex;gap:.25rem;padding:.65rem .9rem;}\n" +
       ".sofia-typing span{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;animation:sofia-blink 1.2s infinite ease-in-out;}\n" +
@@ -480,10 +484,22 @@
     shadow.appendChild(root);
 
     var launcher = document.createElement("button");
-    launcher.className = "sofia-launcher";
+    var launcherType = config.appearance.launcherType || "icono";
+    launcher.className =
+      "sofia-launcher " +
+      (launcherType === "icono" ? "sofia-launcher-icon" : "sofia-launcher-label");
     launcher.type = "button";
     launcher.setAttribute("aria-label", "Abrir conversación");
-    launcher.innerHTML = svg(config.appearance.launcherIcon, 20);
+    var launcherLabelText =
+      config.appearance.launcherLabel || config.appearance.headerTitle || config.name;
+    if (launcherType === "icono") {
+      launcher.innerHTML = svg(config.appearance.launcherIcon, 20);
+    } else if (launcherType === "texto") {
+      launcher.textContent = launcherLabelText;
+    } else {
+      launcher.innerHTML = svg(config.appearance.launcherIcon, 18);
+      launcher.appendChild(document.createTextNode(launcherLabelText));
+    }
     root.appendChild(launcher);
 
     var windowEl = document.createElement("div");
@@ -540,6 +556,8 @@
 
     var form = document.createElement("form");
     form.className = "sofia-form";
+    var formInner = document.createElement("div");
+    formInner.className = "sofia-form-inner";
     var textarea = document.createElement("textarea");
     textarea.className = "sofia-input";
     textarea.rows = 1;
@@ -549,9 +567,10 @@
     sendBtn.type = "submit";
     sendBtn.className = "sofia-send";
     sendBtn.setAttribute("aria-label", "Enviar mensaje");
-    sendBtn.innerHTML = svg("send", 16);
-    form.appendChild(textarea);
-    form.appendChild(sendBtn);
+    sendBtn.innerHTML = svg("send", 14);
+    formInner.appendChild(textarea);
+    formInner.appendChild(sendBtn);
+    form.appendChild(formInner);
     windowEl.appendChild(form);
 
     if (config.appearance.footerLinkLabel || config.appearance.footerLinkUrl) {

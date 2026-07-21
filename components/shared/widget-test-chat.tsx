@@ -348,30 +348,32 @@ export function WidgetTestChat() {
               </div>
 
               <form
-                className="flex items-end gap-2 p-2.5"
+                className="p-2.5"
                 onSubmit={(event) => {
                   event.preventDefault();
                   handleSend();
                 }}
               >
-                <textarea
-                  rows={1}
-                  className="max-h-24 flex-1 resize-none rounded-full border border-input bg-transparent px-4 py-2 text-base outline-none"
-                  placeholder="Escribe un mensaje de prueba..."
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  onKeyDown={handleKeyDown}
-                  disabled={isSending}
-                />
-                <button
-                  type="submit"
-                  disabled={isSending || !input.trim()}
-                  aria-label="Enviar"
-                  className="flex size-9 shrink-0 items-center justify-center rounded-md text-white disabled:opacity-50"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  <Send className="size-4" />
-                </button>
+                <div className="flex items-end gap-1 rounded-full border border-input py-1 pr-1 pl-4">
+                  <textarea
+                    rows={1}
+                    className="max-h-24 flex-1 resize-none bg-transparent py-1.5 text-base outline-none"
+                    placeholder="Escribe un mensaje de prueba..."
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={isSending}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSending || !input.trim()}
+                    aria-label="Enviar"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-full text-white disabled:opacity-50"
+                    style={{ backgroundColor: primaryColor }}
+                  >
+                    <Send className="size-4" />
+                  </button>
+                </div>
               </form>
 
               {hasFooter && (
@@ -403,12 +405,25 @@ export function WidgetTestChat() {
         onClick={() => (isOpen ? closePanel() : openPanel())}
         aria-label={isOpen ? "Cerrar panel de prueba" : "Probar widget"}
         className={cn(
-          "fixed right-6 bottom-6 z-50 flex size-12 items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:brightness-110",
-          launcherShapeClass,
+          "fixed right-6 bottom-6 z-50 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:brightness-110",
+          isOpen || !appearance || appearance.launcherType === "icono"
+            ? cn("size-12", launcherShapeClass)
+            : "h-12 gap-2 rounded-full px-5 text-sm font-medium",
         )}
         style={{ backgroundColor: launcherColor, boxShadow: shadow }}
       >
-        {isOpen ? <X className="size-5" /> : <LauncherIcon className="size-5" />}
+        {isOpen ? (
+          <X className="size-5" />
+        ) : appearance?.launcherType === "texto" ? (
+          appearance.launcherLabel || widget.name
+        ) : appearance?.launcherType === "icono_texto" ? (
+          <>
+            <LauncherIcon className="size-5" />
+            {appearance.launcherLabel || widget.name}
+          </>
+        ) : (
+          <LauncherIcon className="size-5" />
+        )}
       </button>
     </>
   );

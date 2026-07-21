@@ -818,7 +818,9 @@ export type Database = {
           initial_message: string
           launcher_color: string
           launcher_icon: string
+          launcher_label: string | null
           launcher_shape: string
+          launcher_type: string
           position: string
           primary_color: string
           shadow_style: string
@@ -851,7 +853,9 @@ export type Database = {
           initial_message?: string
           launcher_color?: string
           launcher_icon?: string
+          launcher_label?: string | null
           launcher_shape?: string
+          launcher_type?: string
           position?: string
           primary_color?: string
           shadow_style?: string
@@ -884,7 +888,9 @@ export type Database = {
           initial_message?: string
           launcher_color?: string
           launcher_icon?: string
+          launcher_label?: string | null
           launcher_shape?: string
+          launcher_type?: string
           position?: string
           primary_color?: string
           shadow_style?: string

@@ -37,6 +37,8 @@ function toEntity(row: WidgetAppearanceRow): WidgetAppearance {
     launcherIcon: row.launcher_icon,
     launcherColor: row.launcher_color,
     launcherShape: row.launcher_shape as WidgetAppearance["launcherShape"],
+    launcherType: row.launcher_type as WidgetAppearance["launcherType"],
+    launcherLabel: row.launcher_label,
     footerLinkUrl: row.footer_link_url,
     footerLinkLabel: row.footer_link_label,
     footerLinkColor: row.footer_link_color,
@@ -114,6 +116,9 @@ export class SupabaseWidgetAppearanceRepository {
       patch.launcher_color = input.launcherColor;
     if (input.launcherShape !== undefined)
       patch.launcher_shape = input.launcherShape;
+    if (input.launcherType !== undefined) patch.launcher_type = input.launcherType;
+    if (input.launcherLabel !== undefined)
+      patch.launcher_label = input.launcherLabel;
     if (input.footerLinkUrl !== undefined)
       patch.footer_link_url = input.footerLinkUrl;
     if (input.footerLinkLabel !== undefined)

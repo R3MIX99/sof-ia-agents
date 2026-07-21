@@ -93,6 +93,8 @@ export class WidgetService {
         launcherIcon: originalAppearance.launcherIcon,
         launcherColor: originalAppearance.launcherColor,
         launcherShape: originalAppearance.launcherShape,
+        launcherType: originalAppearance.launcherType,
+        launcherLabel: originalAppearance.launcherLabel,
         userBubbleColor: originalAppearance.userBubbleColor,
         assistantBubbleColor: originalAppearance.assistantBubbleColor,
         footerLinkUrl: originalAppearance.footerLinkUrl,
