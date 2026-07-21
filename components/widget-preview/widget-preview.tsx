@@ -85,24 +85,26 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
             className="flex flex-1 flex-col"
             style={{ padding: spacing.padding, gap: spacing.gap }}
           >
-            {(appearance.initialMessages.length > 0
-              ? appearance.initialMessages
-              : ["¡Hola! ¿En qué puedo ayudarte hoy?"]
-            ).map((message, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "max-w-[85%] self-start rounded-lg px-3 py-2 text-sm",
-                  entranceClass,
-                )}
-                style={{
-                  backgroundColor: appearance.assistantBubbleColor,
-                  color: appearance.assistantTextColor,
-                }}
-              >
-                {message}
-              </div>
-            ))}
+            <div className="flex flex-col gap-1">
+              {(appearance.initialMessages.length > 0
+                ? appearance.initialMessages
+                : ["¡Hola! ¿En qué puedo ayudarte hoy?"]
+              ).map((message, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "max-w-[85%] self-start rounded-lg px-3 py-2 text-sm",
+                    entranceClass,
+                  )}
+                  style={{
+                    backgroundColor: appearance.assistantBubbleColor,
+                    color: appearance.assistantTextColor,
+                  }}
+                >
+                  {message}
+                </div>
+              ))}
+            </div>
             <div
               className={cn(
                 "max-w-[85%] self-end rounded-lg px-3 py-2 text-sm text-white",

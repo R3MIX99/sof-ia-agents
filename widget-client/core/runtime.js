@@ -453,6 +453,7 @@
       appearance.assistantTextColor +
       ";border-bottom-left-radius:.125rem;}\n" +
       ".sofia-bubble-integration{align-self:flex-start;background:transparent;border:1px dashed currentColor;opacity:.85;font-size:.8rem;}\n" +
+      ".sofia-initial-messages{display:flex;flex-direction:column;gap:.25rem;}\n" +
       ".sofia-suggested{display:flex;flex-wrap:wrap;gap:.4rem;padding:0 " +
       spacing.padding +
       " .5rem;}\n" +
@@ -746,12 +747,19 @@
     }, 12);
   }
 
-  /** Revela una lista de mensajes en orden, cada uno en su propia burbuja, esperando a que termine el anterior antes de empezar el siguiente. */
+  /** Revela una lista de mensajes en orden, cada uno en su propia burbuja dentro de un mismo grupo (espaciado más angosto entre ellas que el de la conversación general), esperando a que termine el anterior antes de empezar el siguiente. */
   function typewriterRevealSequence(messages, messagesEl) {
+    var group = document.createElement("div");
+    group.className = "sofia-initial-messages";
+    messagesEl.appendChild(group);
+
     var index = 0;
     function next() {
       if (index >= messages.length) return;
-      var bubble = appendBubble(messagesEl, "asistente", "", false);
+      var bubble = document.createElement("div");
+      bubble.className = "sofia-bubble sofia-bubble-assistant";
+      group.appendChild(bubble);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
       var text = messages[index];
       index += 1;
       typewriterReveal(bubble, text, messagesEl, next);
