@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Send, X } from "lucide-react";
+import { RotateCcw, Send, X } from "lucide-react";
 import { useWidgetDetail } from "@/context/widget-detail-context";
 import { apiFetch, ApiClientError } from "@/lib/http/api-client";
 import type { TestChatResult } from "@/services/widgets/widget-test-chat.service";
@@ -29,6 +29,25 @@ const SPACING_SCALES: Record<string, { padding: string; gap: string }> = {
 };
 
 const CLOSE_ANIMATION_MS = 200;
+
+/** Revela un texto progresivamente, simulando que se escribe en vivo; se monta una vez por burbuja nueva. */
+function TypewriterText({ text }: { text: string }) {
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    setVisibleCount(0);
+    let revealed = 0;
+    const step = Math.max(1, Math.round(text.length / 60));
+    const id = setInterval(() => {
+      revealed += step;
+      setVisibleCount(Math.min(revealed, text.length));
+      if (revealed >= text.length) clearInterval(id);
+    }, 12);
+    return () => clearInterval(id);
+  }, [text]);
+
+  return <>{text.slice(0, visibleCount)}</>;
+}
 
 function TypingBubble({ backgroundColor }: { backgroundColor: string }) {
   return (
@@ -103,6 +122,11 @@ export function WidgetTestChat() {
     } else {
       setIsRendered(false);
     }
+  }
+
+  function resetChat() {
+    setMessages([]);
+    setInput("");
   }
 
   async function handleSend() {
@@ -210,6 +234,14 @@ export function WidgetTestChat() {
             </div>
             <button
               type="button"
+              aria-label="Iniciar chat nuevo"
+              onClick={resetChat}
+              className="shrink-0 opacity-85 hover:opacity-100"
+            >
+              <RotateCcw className="size-4" />
+            </button>
+            <button
+              type="button"
               aria-label="Cerrar prueba"
               onClick={closePanel}
               className="shrink-0 opacity-85 hover:opacity-100"
@@ -240,9 +272,42 @@ export function WidgetTestChat() {
                 style={{ padding: spacing.padding, gap: spacing.gap }}
               >
                 {messages.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Envía un mensaje para probar cómo responde este asistente.
-                  </p>
+                  <div className="flex flex-1 flex-col items-center justify-center gap-1 px-2 text-center">
+                    {appearance?.companyName && (
+                      <>
+                        {widget.logoUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={widget.logoUrl}
+                            alt=""
+                            className="mb-1 size-16 rounded-full object-cover"
+                          />
+                        )}
+                        <p className="text-[17px] font-bold">
+                          {appearance.companyName}
+                        </p>
+                        {appearance.companyTagline && (
+                          <p className="text-sm text-muted-foreground">
+                            {appearance.companyTagline}
+                          </p>
+                        )}
+                      </>
+                    )}
+                    {appearance?.initialMessage && (
+                      <div
+                        className="mt-3 max-w-[85%] rounded-lg px-3 py-2 text-left text-base leading-normal"
+                        style={{ backgroundColor: assistantBubbleColor }}
+                      >
+                        <TypewriterText text={appearance.initialMessage} />
+                      </div>
+                    )}
+                    {!appearance?.companyName && !appearance?.initialMessage && (
+                      <p className="text-sm text-muted-foreground">
+                        Envía un mensaje para probar cómo responde este
+                        asistente.
+                      </p>
+                    )}
+                  </div>
                 )}
                 {messages.map((message, index) => (
                   <div
@@ -265,7 +330,11 @@ export function WidgetTestChat() {
                           : undefined
                     }
                   >
-                    {message.content}
+                    {message.role === "asistente" && !message.failed ? (
+                      <TypewriterText text={message.content} />
+                    ) : (
+                      message.content
+                    )}
                   </div>
                 ))}
                 {isSending && (
@@ -274,7 +343,7 @@ export function WidgetTestChat() {
               </div>
 
               <form
-                className="flex items-end gap-2 border-t border-black/5 p-2.5"
+                className="flex items-end gap-2 p-2.5"
                 onSubmit={(event) => {
                   event.preventDefault();
                   handleSend();
@@ -301,7 +370,7 @@ export function WidgetTestChat() {
               </form>
 
               {hasFooter && (
-                <div className="border-t border-black/5 px-4 py-2 text-center text-[11px]">
+                <div className="px-4 pt-2 pb-4 text-center text-[11px]">
                   {appearance?.footerLinkUrl ? (
                     <a
                       href={appearance.footerLinkUrl}

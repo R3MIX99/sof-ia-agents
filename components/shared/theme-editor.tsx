@@ -148,6 +148,38 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
       </section>
 
       <section className="space-y-4">
+        <h3 className="text-sm font-medium text-foreground">
+          Pantalla de bienvenida
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          Se muestra centrada, con el logo del widget, antes del primer
+          mensaje. Déjala en blanco para no mostrarla.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="company-name">Nombre de la empresa</Label>
+            <Input
+              id="company-name"
+              value={appearance.companyName ?? ""}
+              onChange={(event) =>
+                onChange({ companyName: event.target.value || null })
+              }
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="company-tagline">Frase</Label>
+            <Input
+              id="company-tagline"
+              value={appearance.companyTagline ?? ""}
+              onChange={(event) =>
+                onChange({ companyTagline: event.target.value || null })
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
         <h3 className="text-sm font-medium text-foreground">Enlace inferior</h3>
         <p className="text-xs text-muted-foreground">
           Se muestra centrado en la parte inferior del widget. Déjalo en

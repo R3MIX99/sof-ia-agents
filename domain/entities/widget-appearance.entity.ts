@@ -19,6 +19,9 @@ export interface WidgetAppearance {
   fontFamily: string;
   headerTitle: string;
   headerSubtitle: string | null;
+  // Pantalla de bienvenida centrada (logo + nombre + frase) mostrada antes del primer mensaje.
+  companyName: string | null;
+  companyTagline: string | null;
   initialMessage: string;
   suggestedMessages: string[];
   position: WidgetPosition;

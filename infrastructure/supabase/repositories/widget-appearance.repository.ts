@@ -22,6 +22,8 @@ function toEntity(row: WidgetAppearanceRow): WidgetAppearance {
     fontFamily: row.font_family,
     headerTitle: row.header_title,
     headerSubtitle: row.header_subtitle,
+    companyName: row.company_name,
+    companyTagline: row.company_tagline,
     initialMessage: row.initial_message,
     suggestedMessages: (row.suggested_messages ?? []) as string[],
     position: row.position as WidgetAppearance["position"],
@@ -84,6 +86,9 @@ export class SupabaseWidgetAppearanceRepository {
     if (input.headerTitle !== undefined) patch.header_title = input.headerTitle;
     if (input.headerSubtitle !== undefined)
       patch.header_subtitle = input.headerSubtitle;
+    if (input.companyName !== undefined) patch.company_name = input.companyName;
+    if (input.companyTagline !== undefined)
+      patch.company_tagline = input.companyTagline;
     if (input.initialMessage !== undefined)
       patch.initial_message = input.initialMessage;
     if (input.suggestedMessages !== undefined)

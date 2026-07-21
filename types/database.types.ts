@@ -805,6 +805,8 @@ export type Database = {
           assistant_bubble_color: string
           background_color: string
           border_radius: number
+          company_name: string | null
+          company_tagline: string | null
           created_at: string
           font_family: string
           footer_link_label: string | null
@@ -834,6 +836,8 @@ export type Database = {
           assistant_bubble_color?: string
           background_color?: string
           border_radius?: number
+          company_name?: string | null
+          company_tagline?: string | null
           created_at?: string
           font_family?: string
           footer_link_label?: string | null
@@ -863,6 +867,8 @@ export type Database = {
           assistant_bubble_color?: string
           background_color?: string
           border_radius?: number
+          company_name?: string | null
+          company_tagline?: string | null
           created_at?: string
           font_family?: string
           footer_link_label?: string | null
