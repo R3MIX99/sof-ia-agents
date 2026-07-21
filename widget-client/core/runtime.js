@@ -425,7 +425,7 @@
       ".sofia-header-restart{background:transparent;border:none;color:inherit;cursor:pointer;padding:.25rem;display:flex;opacity:.85;margin-left:auto;}\n" +
       ".sofia-header-close{background:transparent;border:none;color:inherit;cursor:pointer;padding:.25rem;display:flex;opacity:.85;}\n" +
       ".sofia-header-restart:hover,.sofia-header-close:hover{opacity:1;}\n" +
-      ".sofia-messages{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:" +
+      ".sofia-messages{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;padding:" +
       spacing.padding +
       ";gap:" +
       spacing.gap +

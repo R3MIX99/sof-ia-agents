@@ -285,7 +285,7 @@ export function WidgetTestChat() {
           ) : (
             <>
               <div
-                className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+                className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
                 style={{ padding: spacing.padding, gap: spacing.gap }}
               >
                 {messages.length === 0 && (
