@@ -507,6 +507,10 @@
 
     var host = document.createElement("div");
     host.style.all = "initial";
+    /* Excluye el widget de librerías de scroll suave de la página anfitriona (Lenis y
+       similares respetan este atributo, buscándolo en event.composedPath(), para no
+       secuestrar la rueda del mouse sobre elementos con su propio scroll interno). */
+    host.setAttribute("data-lenis-prevent", "");
     document.body.appendChild(host);
     var shadow = host.attachShadow({ mode: "open" });
 
