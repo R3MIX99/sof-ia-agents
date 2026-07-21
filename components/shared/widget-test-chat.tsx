@@ -52,7 +52,7 @@ function TypewriterText({ text }: { text: string }) {
 function TypingBubble({ backgroundColor }: { backgroundColor: string }) {
   return (
     <div
-      className="flex items-center gap-1 self-start rounded-lg px-3 py-2.5"
+      className="flex items-center gap-1 self-start rounded-lg px-3.5 py-3"
       style={{ backgroundColor }}
     >
       {[0, 1, 2].map((i) => (
