@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { WidgetAppearance } from "@/domain/entities/widget-appearance.entity";
 import { ColorPicker } from "@/components/shared/color-picker";
 import { Input } from "@/components/ui/input";
@@ -13,12 +14,64 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FONT_FAMILY_OPTIONS } from "@/lib/constants/widget-fonts";
+import { checkGoogleFont, DEFAULT_FONT_FAMILY } from "@/lib/constants/widget-fonts";
 import {
   LAUNCHER_ICON_MAP,
   LAUNCHER_ICON_OPTIONS,
 } from "@/lib/constants/widget-launcher-icons";
 import { cn } from "@/lib/utils";
+
+type FontCheckStatus = "idle" | "checking" | "found" | "not_found";
+
+/** Campo de tipografía de texto libre: cualquier familia de Google Fonts, verificada con un pequeño retraso mientras el usuario escribe. Si no se encuentra, el widget usa Inter como respaldo automáticamente (ver toFontFamilyStack). */
+function FontFamilyField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [status, setStatus] = useState<FontCheckStatus>("idle");
+
+  useEffect(() => {
+    const family = value.trim();
+    if (!family) {
+      setStatus("idle");
+      return;
+    }
+    setStatus("checking");
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      checkGoogleFont(family).then((found) => {
+        if (!cancelled) setStatus(found ? "found" : "not_found");
+      });
+    }, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [value]);
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor="font-family">Familia tipográfica</Label>
+      <Input
+        id="font-family"
+        placeholder={DEFAULT_FONT_FAMILY}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <p className="text-xs text-muted-foreground">
+        {status === "checking" && "Verificando en Google Fonts…"}
+        {status === "found" && "✓ Disponible en Google Fonts."}
+        {status === "not_found" &&
+          `No se encontró "${value}" en Google Fonts. Se usará ${DEFAULT_FONT_FAMILY} como respaldo.`}
+        {status === "idle" &&
+          `Escribe cualquier fuente de Google Fonts. Si no se encuentra, se usa ${DEFAULT_FONT_FAMILY}.`}
+      </p>
+    </div>
+  );
+}
 
 export type WidgetAppearancePatch = Partial<
   Omit<WidgetAppearance, "id" | "widgetId" | "createdAt" | "updatedAt">
@@ -111,29 +164,20 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
             value={appearance.assistantBubbleColor}
             onChange={(value) => onChange({ assistantBubbleColor: value })}
           />
+          <ColorPicker
+            label="Texto del asistente"
+            value={appearance.assistantTextColor}
+            onChange={(value) => onChange({ assistantTextColor: value })}
+          />
         </div>
       </section>
 
       <section className="space-y-4">
         <h3 className="text-sm font-medium text-foreground">Tipografía</h3>
-        <div className="space-y-1.5">
-          <Label>Familia tipográfica</Label>
-          <Select
-            value={appearance.fontFamily}
-            onValueChange={(value) => onChange({ fontFamily: value })}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {FONT_FAMILY_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FontFamilyField
+          value={appearance.fontFamily}
+          onChange={(value) => onChange({ fontFamily: value })}
+        />
       </section>
 
       <section className="space-y-4">

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import type { WidgetAppearance } from "@/domain/entities/widget-appearance.entity";
 import { LAUNCHER_ICON_MAP } from "@/lib/constants/widget-launcher-icons";
-import { toFontFamilyStack } from "@/lib/constants/widget-fonts";
-import { getReadableTextColor } from "@/lib/constants/widget-contrast";
+import { loadGoogleFont, toFontFamilyStack } from "@/lib/constants/widget-fonts";
+import { getHeaderTextColor, getReadableTextColor } from "@/lib/constants/widget-contrast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,10 @@ const SPACING_SCALES: Record<string, { padding: string; gap: string }> = {
 export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
   const [replayKey, setReplayKey] = useState(0);
 
+  useEffect(() => {
+    loadGoogleFont(appearance.fontFamily);
+  }, [appearance.fontFamily]);
+
   const LauncherIcon =
     LAUNCHER_ICON_MAP[appearance.launcherIcon] ??
     LAUNCHER_ICON_MAP["message-circle"];
@@ -40,7 +44,7 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
     ? "animate-in fade-in slide-in-from-bottom-2 duration-300"
     : "";
   const bodyTextColor = getReadableTextColor(appearance.backgroundColor, appearance.themeMode);
-  const headerTextColor = getReadableTextColor(appearance.primaryColor, appearance.themeMode);
+  const headerTextColor = getHeaderTextColor(appearance.textColor, appearance.themeMode);
 
   return (
     <div className="space-y-3">
@@ -86,7 +90,10 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
                 "max-w-[85%] self-start rounded-lg px-3 py-2 text-sm",
                 entranceClass,
               )}
-              style={{ backgroundColor: appearance.assistantBubbleColor }}
+              style={{
+                backgroundColor: appearance.assistantBubbleColor,
+                color: appearance.assistantTextColor,
+              }}
             >
               {appearance.initialMessage || "¡Hola! ¿En qué puedo ayudarte hoy?"}
             </div>
@@ -158,7 +165,7 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
             <div
               key={`launcher-${replayKey}`}
               className={cn(
-                "flex h-14 items-center rounded-full px-6 text-sm font-medium text-white",
+                "flex h-10 items-center rounded-full px-4 text-sm font-medium text-white",
                 entranceClass,
               )}
               style={{ backgroundColor: appearance.launcherColor, boxShadow: shadow }}
@@ -170,12 +177,12 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
             <div
               key={`launcher-${replayKey}`}
               className={cn(
-                "flex h-14 items-center gap-2 rounded-full px-5 text-sm font-medium text-white",
+                "flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-white",
                 entranceClass,
               )}
               style={{ backgroundColor: appearance.launcherColor, boxShadow: shadow }}
             >
-              <LauncherIcon className="size-5" />
+              <LauncherIcon className="size-4" />
               {appearance.launcherLabel || widgetName}
             </div>
           )}

@@ -62,13 +62,39 @@
     return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
   }
 
-  /** Color de texto legible para elementos sin selector de color propio (título/subtítulo del encabezado, input, bienvenida). En "claro"/"oscuro" el resultado es fijo; en "automático" se calcula por luminancia contra el fondo real. */
+  /** Color de texto legible para elementos sin selector de color propio (input, bienvenida). En "claro"/"oscuro" el resultado es fijo; en "automático" se calcula por luminancia contra el fondo real. */
   function getReadableTextColor(backgroundHex, themeMode) {
     if (themeMode === "claro") return "#111827";
     if (themeMode === "oscuro") return "#ffffff";
     var rgb = hexToRgb(backgroundHex);
     if (!rgb) return "#ffffff";
     return relativeLuminance(rgb) > 0.5 ? "#111827" : "#ffffff";
+  }
+
+  /** Color de texto del encabezado. En "claro"/"oscuro" es fijo; en "automático" usa directamente el "Color de texto" de Apariencia en vez de calcular contraste contra el color primario. */
+  function getHeaderTextColor(textColor, themeMode) {
+    if (themeMode === "claro") return "#111827";
+    if (themeMode === "oscuro") return "#ffffff";
+    return textColor;
+  }
+
+  var GOOGLE_FONT_INJECTED = {};
+  /** Inyecta un <link> de Google Fonts (documento principal, fuera del Shadow DOM) para la fuente elegida más Inter como respaldo garantizado. */
+  function loadGoogleFont(fontFamily) {
+    var family = String(fontFamily || "").trim() || "Inter";
+    var families = family === "Inter" ? [family] : [family, "Inter"];
+    var key = families.join("|");
+    if (GOOGLE_FONT_INJECTED[key]) return;
+    GOOGLE_FONT_INJECTED[key] = true;
+    var params = families
+      .map(function (f) {
+        return "family=" + encodeURIComponent(f).replace(/%20/g, "+") + ":wght@400;500;600;700";
+      })
+      .join("&");
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?" + params + "&display=swap";
+    document.head.appendChild(link);
   }
 
   function svg(name, size) {
@@ -344,10 +370,15 @@
   function buildStyles(appearance) {
     var shadow = SHADOW_STYLES[appearance.shadowStyle] || SHADOW_STYLES.suave;
     var spacing = SPACING_SCALES[appearance.spacingScale] || SPACING_SCALES.normal;
-    var fontStack = '"' + appearance.fontFamily + '", system-ui, sans-serif';
+    var fontStack =
+      '"' +
+      appearance.fontFamily +
+      '", ' +
+      (appearance.fontFamily === "Inter" ? "" : '"Inter", ') +
+      "system-ui, sans-serif";
     var launcherRadius = appearance.launcherShape === "circular" ? "50%" : "18px";
     var bodyTextColor = getReadableTextColor(appearance.backgroundColor, appearance.themeMode);
-    var headerTextColor = getReadableTextColor(appearance.primaryColor, appearance.themeMode);
+    var headerTextColor = getHeaderTextColor(appearance.textColor, appearance.themeMode);
 
     return (
       ":host{all:initial;}\n" +
@@ -366,7 +397,7 @@
       ".sofia-launcher-icon{width:48px;height:48px;border-radius:" +
       launcherRadius +
       ";}\n" +
-      ".sofia-launcher-label{height:48px;padding:0 1.25rem;border-radius:999px;font-size:.875rem;font-weight:600;white-space:nowrap;}\n" +
+      ".sofia-launcher-label{height:40px;padding:0 1rem;border-radius:999px;font-size:.875rem;font-weight:600;white-space:nowrap;}\n" +
       ".sofia-window{position:fixed;" +
       positionCss(appearance.position, true) +
       "width:" +
@@ -418,6 +449,8 @@
       ";color:#fff;border-bottom-right-radius:.125rem;}\n" +
       ".sofia-bubble-assistant{align-self:flex-start;background:" +
       appearance.assistantBubbleColor +
+      ";color:" +
+      appearance.assistantTextColor +
       ";border-bottom-left-radius:.125rem;}\n" +
       ".sofia-bubble-integration{align-self:flex-start;background:transparent;border:1px dashed currentColor;opacity:.85;font-size:.8rem;}\n" +
       ".sofia-suggested{display:flex;flex-wrap:wrap;gap:.4rem;padding:0 " +
@@ -470,6 +503,8 @@
   }
 
   function buildWidget(config) {
+    loadGoogleFont(config.appearance.fontFamily);
+
     var host = document.createElement("div");
     host.style.all = "initial";
     document.body.appendChild(host);
@@ -497,7 +532,7 @@
     } else if (launcherType === "texto") {
       launcher.textContent = launcherLabelText;
     } else {
-      launcher.innerHTML = svg(config.appearance.launcherIcon, 18);
+      launcher.innerHTML = svg(config.appearance.launcherIcon, 16);
       launcher.appendChild(document.createTextNode(launcherLabelText));
     }
     root.appendChild(launcher);

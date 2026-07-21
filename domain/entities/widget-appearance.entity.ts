@@ -17,6 +17,8 @@ export interface WidgetAppearance {
   // Colores de las burbujas de mensaje del usuario y del asistente.
   userBubbleColor: string;
   assistantBubbleColor: string;
+  // Color del texto dentro de la burbuja del asistente, independiente del color de texto general.
+  assistantTextColor: string;
   fontFamily: string;
   headerTitle: string;
   headerSubtitle: string | null;

@@ -7,8 +7,8 @@ import { useWidgetDetail } from "@/context/widget-detail-context";
 import { apiFetch, ApiClientError } from "@/lib/http/api-client";
 import type { TestChatResult } from "@/services/widgets/widget-test-chat.service";
 import { LAUNCHER_ICON_MAP } from "@/lib/constants/widget-launcher-icons";
-import { toFontFamilyStack } from "@/lib/constants/widget-fonts";
-import { getReadableTextColor } from "@/lib/constants/widget-contrast";
+import { loadGoogleFont, toFontFamilyStack } from "@/lib/constants/widget-fonts";
+import { getHeaderTextColor, getReadableTextColor } from "@/lib/constants/widget-contrast";
 import { cn } from "@/lib/utils";
 
 interface TestMessage {
@@ -50,11 +50,17 @@ function TypewriterText({ text }: { text: string }) {
   return <>{text.slice(0, visibleCount)}</>;
 }
 
-function TypingBubble({ backgroundColor }: { backgroundColor: string }) {
+function TypingBubble({
+  backgroundColor,
+  color,
+}: {
+  backgroundColor: string;
+  color: string;
+}) {
   return (
     <div
       className="flex items-center gap-1 self-start rounded-lg px-3.5 py-3"
-      style={{ backgroundColor }}
+      style={{ backgroundColor, color }}
     >
       {[0, 1, 2].map((i) => (
         <span
@@ -77,6 +83,10 @@ export function WidgetTestChat() {
   const [isSending, setIsSending] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    if (appearance?.fontFamily) loadGoogleFont(appearance.fontFamily);
+  }, [appearance?.fontFamily]);
+
   if (!widget) return null;
 
   const LauncherIcon = appearance
@@ -98,7 +108,9 @@ export function WidgetTestChat() {
   const themeMode = appearance?.themeMode ?? "automático";
   const backgroundColor = appearance?.backgroundColor ?? "#ffffff";
   const bodyTextColor = getReadableTextColor(backgroundColor, themeMode);
-  const headerTextColor = getReadableTextColor(primaryColor, themeMode);
+  const textColor = appearance?.textColor ?? "#0f172a";
+  const headerTextColor = getHeaderTextColor(textColor, themeMode);
+  const assistantTextColor = appearance?.assistantTextColor ?? "#0f172a";
   const hasFooter = Boolean(appearance?.footerLinkLabel || appearance?.footerLinkUrl);
   const animationsEnabled = appearance?.animationsEnabled ?? true;
   const entranceClass = animationsEnabled
@@ -301,7 +313,10 @@ export function WidgetTestChat() {
                     {appearance?.initialMessage && (
                       <div
                         className="mt-3 max-w-[85%] rounded-lg px-3 py-2 text-left text-base leading-normal"
-                        style={{ backgroundColor: assistantBubbleColor }}
+                        style={{
+                          backgroundColor: assistantBubbleColor,
+                          color: assistantTextColor,
+                        }}
                       >
                         <TypewriterText text={appearance.initialMessage} />
                       </div>
@@ -331,7 +346,10 @@ export function WidgetTestChat() {
                       message.role === "usuario"
                         ? { backgroundColor: userBubbleColor }
                         : message.role === "asistente" && !message.failed
-                          ? { backgroundColor: assistantBubbleColor }
+                          ? {
+                              backgroundColor: assistantBubbleColor,
+                              color: assistantTextColor,
+                            }
                           : undefined
                     }
                   >
@@ -343,7 +361,10 @@ export function WidgetTestChat() {
                   </div>
                 ))}
                 {isSending && (
-                  <TypingBubble backgroundColor={assistantBubbleColor} />
+                  <TypingBubble
+                    backgroundColor={assistantBubbleColor}
+                    color={assistantTextColor}
+                  />
                 )}
               </div>
 
@@ -408,7 +429,7 @@ export function WidgetTestChat() {
           "fixed right-6 bottom-6 z-50 flex items-center justify-center text-white transition-all duration-200 hover:scale-110 hover:brightness-110",
           isOpen || !appearance || appearance.launcherType === "icono"
             ? cn("size-12", launcherShapeClass)
-            : "h-12 gap-2 rounded-full px-5 text-sm font-medium",
+            : "h-10 gap-1.5 rounded-full px-4 text-sm font-medium",
         )}
         style={{ backgroundColor: launcherColor, boxShadow: shadow }}
       >
@@ -418,7 +439,7 @@ export function WidgetTestChat() {
           appearance.launcherLabel || widget.name
         ) : appearance?.launcherType === "icono_texto" ? (
           <>
-            <LauncherIcon className="size-5" />
+            <LauncherIcon className="size-4" />
             {appearance.launcherLabel || widget.name}
           </>
         ) : (

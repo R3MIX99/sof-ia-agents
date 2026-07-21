@@ -19,6 +19,7 @@ function toEntity(row: WidgetAppearanceRow): WidgetAppearance {
     textColor: row.text_color,
     userBubbleColor: row.user_bubble_color,
     assistantBubbleColor: row.assistant_bubble_color,
+    assistantTextColor: row.assistant_text_color,
     fontFamily: row.font_family,
     headerTitle: row.header_title,
     headerSubtitle: row.header_subtitle,
@@ -86,6 +87,8 @@ export class SupabaseWidgetAppearanceRepository {
       patch.user_bubble_color = input.userBubbleColor;
     if (input.assistantBubbleColor !== undefined)
       patch.assistant_bubble_color = input.assistantBubbleColor;
+    if (input.assistantTextColor !== undefined)
+      patch.assistant_text_color = input.assistantTextColor;
     if (input.fontFamily !== undefined) patch.font_family = input.fontFamily;
     if (input.headerTitle !== undefined) patch.header_title = input.headerTitle;
     if (input.headerSubtitle !== undefined)

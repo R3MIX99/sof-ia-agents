@@ -803,6 +803,7 @@ export type Database = {
         Row: {
           animations_enabled: boolean
           assistant_bubble_color: string
+          assistant_text_color: string
           background_color: string
           border_radius: number
           company_name: string | null
@@ -838,6 +839,7 @@ export type Database = {
         Insert: {
           animations_enabled?: boolean
           assistant_bubble_color?: string
+          assistant_text_color?: string
           background_color?: string
           border_radius?: number
           company_name?: string | null
@@ -873,6 +875,7 @@ export type Database = {
         Update: {
           animations_enabled?: boolean
           assistant_bubble_color?: string
+          assistant_text_color?: string
           background_color?: string
           border_radius?: number
           company_name?: string | null

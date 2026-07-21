@@ -35,3 +35,19 @@ export function getReadableTextColor(
   if (!rgb) return LIGHT_TEXT;
   return relativeLuminance(rgb) > 0.5 ? DARK_TEXT : LIGHT_TEXT;
 }
+
+/**
+ * Color de texto del encabezado (título, subtítulo, íconos de reinicio/cerrar). En modo
+ * "claro"/"oscuro" el resultado es fijo, igual que getReadableTextColor; en "automático"
+ * se usa directamente el "Color de texto" elegido en Apariencia en lugar de calcular
+ * contraste contra el color primario, para que ese campo siga siendo la fuente de verdad
+ * del color de texto por defecto de todo el widget.
+ */
+export function getHeaderTextColor(
+  textColor: string,
+  themeMode: WidgetThemeMode,
+): string {
+  if (themeMode === "claro") return DARK_TEXT;
+  if (themeMode === "oscuro") return LIGHT_TEXT;
+  return textColor;
+}

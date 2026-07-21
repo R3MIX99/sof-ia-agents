@@ -97,6 +97,7 @@ export class WidgetService {
         launcherLabel: originalAppearance.launcherLabel,
         userBubbleColor: originalAppearance.userBubbleColor,
         assistantBubbleColor: originalAppearance.assistantBubbleColor,
+        assistantTextColor: originalAppearance.assistantTextColor,
         footerLinkUrl: originalAppearance.footerLinkUrl,
         footerLinkLabel: originalAppearance.footerLinkLabel,
       });
