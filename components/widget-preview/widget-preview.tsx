@@ -5,6 +5,7 @@ import { RotateCcw } from "lucide-react";
 import type { WidgetAppearance } from "@/domain/entities/widget-appearance.entity";
 import { LAUNCHER_ICON_MAP } from "@/lib/constants/widget-launcher-icons";
 import { toFontFamilyStack } from "@/lib/constants/widget-fonts";
+import { getReadableTextColor } from "@/lib/constants/widget-contrast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,8 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
   const entranceClass = appearance.animationsEnabled
     ? "animate-in fade-in slide-in-from-bottom-2 duration-300"
     : "";
+  const bodyTextColor = getReadableTextColor(appearance.backgroundColor, appearance.themeMode);
+  const headerTextColor = getReadableTextColor(appearance.primaryColor, appearance.themeMode);
 
   return (
     <div className="space-y-3">
@@ -51,13 +54,13 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
           style={{
             borderRadius: `${appearance.borderRadius}px`,
             backgroundColor: appearance.backgroundColor,
-            color: appearance.textColor,
+            color: bodyTextColor,
             boxShadow: shadow,
           }}
         >
           <div
             className="flex items-center gap-2 px-4 py-3"
-            style={{ backgroundColor: appearance.primaryColor, color: "#ffffff" }}
+            style={{ backgroundColor: appearance.primaryColor, color: headerTextColor }}
           >
             <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-sm font-medium">
               {widgetName.slice(0, 1).toUpperCase() || "W"}
@@ -103,8 +106,8 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
                     key={index}
                     className="rounded-full border px-2.5 py-1 text-xs"
                     style={{
-                      borderColor: appearance.primaryColor,
-                      color: appearance.primaryColor,
+                      borderColor: appearance.suggestedMessageColor,
+                      color: appearance.suggestedMessageColor,
                     }}
                   >
                     {message}
@@ -121,12 +124,15 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
                   href={appearance.footerLinkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="opacity-70 hover:underline"
+                  className="opacity-85 hover:underline"
+                  style={{ color: appearance.footerLinkColor }}
                 >
                   {appearance.footerLinkLabel || appearance.footerLinkUrl}
                 </a>
               ) : (
-                <span className="opacity-70">{appearance.footerLinkLabel}</span>
+                <span className="opacity-85" style={{ color: appearance.footerLinkColor }}>
+                  {appearance.footerLinkLabel}
+                </span>
               )}
             </div>
           )}

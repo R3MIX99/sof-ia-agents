@@ -44,6 +44,33 @@
     amplio: { padding: "1.5rem", gap: "1rem" },
   };
 
+  function hexToRgb(hex) {
+    var clean = String(hex || "").trim().replace(/^#/, "");
+    if (clean.length === 3) {
+      clean = clean.replace(/(.)/g, "$1$1");
+    }
+    if (!/^[0-9a-fA-F]{6}$/.test(clean)) return null;
+    var num = parseInt(clean, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function relativeLuminance(rgb) {
+    var channels = [rgb.r, rgb.g, rgb.b].map(function (c) {
+      var s = c / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  }
+
+  /** Color de texto legible para elementos sin selector de color propio (título/subtítulo del encabezado, input, bienvenida). En "claro"/"oscuro" el resultado es fijo; en "automático" se calcula por luminancia contra el fondo real. */
+  function getReadableTextColor(backgroundHex, themeMode) {
+    if (themeMode === "claro") return "#111827";
+    if (themeMode === "oscuro") return "#ffffff";
+    var rgb = hexToRgb(backgroundHex);
+    if (!rgb) return "#ffffff";
+    return relativeLuminance(rgb) > 0.5 ? "#111827" : "#ffffff";
+  }
+
   function svg(name, size) {
     return (
       '<svg xmlns="http://www.w3.org/2000/svg" width="' +
@@ -319,6 +346,8 @@
     var spacing = SPACING_SCALES[appearance.spacingScale] || SPACING_SCALES.normal;
     var fontStack = '"' + appearance.fontFamily + '", system-ui, sans-serif';
     var launcherRadius = appearance.launcherShape === "circular" ? "50%" : "18px";
+    var bodyTextColor = getReadableTextColor(appearance.backgroundColor, appearance.themeMode);
+    var headerTextColor = getReadableTextColor(appearance.primaryColor, appearance.themeMode);
 
     return (
       ":host{all:initial;}\n" +
@@ -347,19 +376,21 @@
       "px;background:" +
       appearance.backgroundColor +
       ";color:" +
-      appearance.textColor +
+      bodyTextColor +
       ";box-shadow:" +
       shadow +
       ";display:flex;flex-direction:column;overflow:hidden;z-index:2147483000;}\n" +
       ".sofia-hidden{display:none !important;}\n" +
       ".sofia-header{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;background:" +
       appearance.primaryColor +
-      ";color:#fff;}\n" +
+      ";color:" +
+      headerTextColor +
+      ";}\n" +
       ".sofia-header-logo{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,.15);}\n" +
       ".sofia-header-title{font-size:1rem;font-weight:600;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}\n" +
       ".sofia-header-subtitle{font-size:.8125rem;opacity:.85;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}\n" +
-      ".sofia-header-restart{background:transparent;border:none;color:#fff;cursor:pointer;padding:.25rem;display:flex;opacity:.85;margin-left:auto;}\n" +
-      ".sofia-header-close{background:transparent;border:none;color:#fff;cursor:pointer;padding:.25rem;display:flex;opacity:.85;}\n" +
+      ".sofia-header-restart{background:transparent;border:none;color:inherit;cursor:pointer;padding:.25rem;display:flex;opacity:.85;margin-left:auto;}\n" +
+      ".sofia-header-close{background:transparent;border:none;color:inherit;cursor:pointer;padding:.25rem;display:flex;opacity:.85;}\n" +
       ".sofia-header-restart:hover,.sofia-header-close:hover{opacity:1;}\n" +
       ".sofia-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:" +
       spacing.padding +
@@ -400,6 +431,7 @@
       ";color:#fff;}\n" +
       ".sofia-form{display:flex;align-items:flex-end;gap:.5rem;padding:.625rem;}\n" +
       ".sofia-input{flex:1;resize:none;border:1px solid rgba(127,127,127,.3);border-radius:.5rem;padding:.5rem .625rem;font-family:inherit;font-size:1rem;background:transparent;color:inherit;max-height:96px;overflow-y:hidden;}\n" +
+      ".sofia-input::placeholder{color:currentColor;opacity:.5;}\n" +
       ".sofia-input:focus{outline:2px solid " +
       appearance.primaryColor +
       ";outline-offset:1px;}\n" +

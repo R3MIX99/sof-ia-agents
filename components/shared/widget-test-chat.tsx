@@ -8,6 +8,7 @@ import { apiFetch, ApiClientError } from "@/lib/http/api-client";
 import type { TestChatResult } from "@/services/widgets/widget-test-chat.service";
 import { LAUNCHER_ICON_MAP } from "@/lib/constants/widget-launcher-icons";
 import { toFontFamilyStack } from "@/lib/constants/widget-fonts";
+import { getReadableTextColor } from "@/lib/constants/widget-contrast";
 import { cn } from "@/lib/utils";
 
 interface TestMessage {
@@ -94,6 +95,10 @@ export function WidgetTestChat() {
   const primaryColor = appearance?.primaryColor ?? "#111827";
   const userBubbleColor = appearance?.userBubbleColor ?? "#111827";
   const assistantBubbleColor = appearance?.assistantBubbleColor ?? "#f3f4f6";
+  const themeMode = appearance?.themeMode ?? "automático";
+  const backgroundColor = appearance?.backgroundColor ?? "#ffffff";
+  const bodyTextColor = getReadableTextColor(backgroundColor, themeMode);
+  const headerTextColor = getReadableTextColor(primaryColor, themeMode);
   const hasFooter = Boolean(appearance?.footerLinkLabel || appearance?.footerLinkUrl);
   const animationsEnabled = appearance?.animationsEnabled ?? true;
   const entranceClass = animationsEnabled
@@ -198,15 +203,15 @@ export function WidgetTestChat() {
             width: 400,
             height: 600,
             borderRadius: appearance?.borderRadius ?? 16,
-            backgroundColor: appearance?.backgroundColor ?? "#ffffff",
-            color: appearance?.textColor ?? "#111827",
+            backgroundColor,
+            color: bodyTextColor,
             boxShadow: shadow,
             fontFamily,
           }}
         >
           <div
             className="flex items-center gap-2 px-4 py-3"
-            style={{ backgroundColor: primaryColor, color: "#ffffff" }}
+            style={{ backgroundColor: primaryColor, color: headerTextColor }}
           >
             {widget.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
