@@ -178,6 +178,14 @@
       }
       closeQuote();
 
+      if (line.trim() === "") {
+        // Una línea en blanco entre elementos de una misma lista no la cierra (lista "suelta"):
+        // evita que una lista con saltos de línea accidentales entre viñetas se parta en
+        // varios bloques <ul>/<ol> separados, cada uno con su propio margen.
+        html.push("");
+        continue;
+      }
+
       var unordered = /^[-*]\s+(.*)$/.exec(line);
       var ordered = /^\d+\.\s+(.*)$/.exec(line);
       if (unordered) {
@@ -199,12 +207,7 @@
         continue;
       }
       closeList();
-
-      if (line.trim() === "") {
-        html.push("");
-      } else {
-        html.push("<p>" + inline(line) + "</p>");
-      }
+      html.push("<p>" + inline(line) + "</p>");
     }
     closeList();
     closeQuote();

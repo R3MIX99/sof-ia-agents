@@ -31,6 +31,11 @@ const SPACING_SCALES: Record<string, { padding: string; gap: string }> = {
 
 const CLOSE_ANIMATION_MS = 200;
 
+/** Colapsa líneas en blanco consecutivas (saltos de línea accidentales, p. ej. al pegar una lista) para que un bloque se muestre compacto en vez de con huecos entre renglones. */
+function normalizeLineBreaks(text: string): string {
+  return text.replace(/\n{2,}/g, "\n");
+}
+
 /** Revela un texto progresivamente, simulando que se escribe en vivo; se monta una vez por burbuja nueva. */
 function TypewriterText({
   text,
@@ -336,7 +341,7 @@ export function WidgetTestChat() {
                               }}
                             >
                               <TypewriterText
-                                text={message}
+                                text={normalizeLineBreaks(message)}
                                 onComplete={() =>
                                   setGreetingStep((step) =>
                                     Math.min(
@@ -384,9 +389,9 @@ export function WidgetTestChat() {
                     }
                   >
                     {message.role === "asistente" && !message.failed ? (
-                      <TypewriterText text={message.content} />
+                      <TypewriterText text={normalizeLineBreaks(message.content)} />
                     ) : (
-                      message.content
+                      normalizeLineBreaks(message.content)
                     )}
                   </div>
                 ))}

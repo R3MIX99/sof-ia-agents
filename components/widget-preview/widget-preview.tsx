@@ -26,6 +26,11 @@ const SPACING_SCALES: Record<string, { padding: string; gap: string }> = {
   amplio: { padding: "1.5rem", gap: "1rem" },
 };
 
+/** Colapsa líneas en blanco consecutivas (saltos de línea accidentales, p. ej. al pegar una lista) para que un bloque se muestre compacto en vez de con huecos entre renglones. */
+function normalizeLineBreaks(text: string): string {
+  return text.replace(/\n{2,}/g, "\n");
+}
+
 /** Widget Preview (sección 8): previsualización en vivo, incluyendo burbujas de mensaje y el botón flotante, sin necesidad de publicar el widget. */
 export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
   const [replayKey, setReplayKey] = useState(0);
@@ -101,7 +106,7 @@ export function WidgetPreview({ appearance, widgetName }: WidgetPreviewProps) {
                     color: appearance.assistantTextColor,
                   }}
                 >
-                  {message}
+                  {normalizeLineBreaks(message)}
                 </div>
               ))}
             </div>
