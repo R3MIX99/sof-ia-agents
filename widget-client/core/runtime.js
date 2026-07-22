@@ -212,7 +212,10 @@
     closeList();
     closeQuote();
 
-    var joined = html.join("\n");
+    // Sin separador: los "\n" entre bloques (<li>, <p>...) son texto insignificante para HTML,
+    // pero se vuelven saltos de línea visibles bajo white-space:pre-line (usado para conservar
+    // saltos durante la animación de escritura), inflando el espacio entre viñetas.
+    var joined = html.join("");
     joined = joined.replace(/ CODEBLOCK(\d+) /g, function (m, idx) {
       return codeBlocks[Number(idx)];
     });
