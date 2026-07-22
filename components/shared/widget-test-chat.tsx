@@ -329,7 +329,7 @@ export function WidgetTestChat() {
                           .map((message, index) => (
                             <div
                               key={index}
-                              className="max-w-[85%] rounded-lg px-3 py-2 text-left text-sm leading-normal"
+                              className="max-w-[85%] rounded-lg px-3 py-2 text-left text-sm leading-normal whitespace-pre-line"
                               style={{
                                 backgroundColor: assistantBubbleColor,
                                 color: assistantTextColor,
@@ -363,7 +363,7 @@ export function WidgetTestChat() {
                   <div
                     key={index}
                     className={cn(
-                      "max-w-[85%] rounded-lg px-3 py-2 text-sm leading-normal",
+                      "max-w-[85%] rounded-lg px-3 py-2 text-sm leading-normal whitespace-pre-line",
                       message.role === "usuario" && "self-end text-white",
                       message.role === "asistente" && "self-start",
                       message.role === "integración" &&

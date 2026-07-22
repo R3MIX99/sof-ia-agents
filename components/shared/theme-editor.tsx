@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
 import type { WidgetAppearance } from "@/domain/entities/widget-appearance.entity";
 import { ColorPicker } from "@/components/shared/color-picker";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,12 +110,21 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
     onChange({ suggestedMessages: messages });
   }
 
-  function updateInitialMessages(value: string) {
-    const messages = value
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
+  function addInitialMessage() {
+    onChange({ initialMessages: [...appearance.initialMessages, ""] });
+  }
+
+  function updateInitialMessage(index: number, value: string) {
+    const messages = appearance.initialMessages.map((message, i) =>
+      i === index ? value : message,
+    );
     onChange({ initialMessages: messages });
+  }
+
+  function removeInitialMessage(index: number) {
+    onChange({
+      initialMessages: appearance.initialMessages.filter((_, i) => i !== index),
+    });
   }
 
   return (
@@ -282,17 +293,44 @@ export function ThemeEditor({ appearance, onChange }: ThemeEditorProps) {
       <section className="space-y-4">
         <h3 className="text-sm font-medium text-foreground">Conversación</h3>
         <div className="space-y-1.5">
-          <Label htmlFor="initial-messages">Mensajes iniciales (uno por línea)</Label>
+          <Label>Mensajes iniciales</Label>
           <p className="text-xs text-muted-foreground">
-            Cada línea se envía como un mensaje independiente del asistente, en
-            orden y en su propia burbuja, antes de que el visitante escriba
-            algo.
+            Cada bloque se envía como un mensaje independiente del asistente,
+            en orden y en su propia burbuja, antes de que el visitante
+            escriba algo. Usa varias líneas dentro de un mismo bloque (por
+            ejemplo, para una lista) sin que se separe en mensajes distintos.
           </p>
-          <Textarea
-            id="initial-messages"
-            value={appearance.initialMessages.join("\n")}
-            onChange={(event) => updateInitialMessages(event.target.value)}
-          />
+          <div className="space-y-2">
+            {appearance.initialMessages.map((message, index) => (
+              <div key={index} className="flex gap-2">
+                <Textarea
+                  value={message}
+                  onChange={(event) =>
+                    updateInitialMessage(index, event.target.value)
+                  }
+                  className="min-h-16"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0"
+                  aria-label="Quitar mensaje"
+                  onClick={() => removeInitialMessage(index)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addInitialMessage}
+          >
+            <Plus className="size-4" /> Agregar mensaje
+          </Button>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="suggested-messages">

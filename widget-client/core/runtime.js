@@ -437,7 +437,7 @@
       ".sofia-greeting-logo{width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:.25rem;}\n" +
       ".sofia-greeting-name{font-size:1.0625rem;font-weight:700;margin:0;}\n" +
       ".sofia-greeting-tagline{font-size:.8125rem;opacity:.7;margin:0;}\n" +
-      ".sofia-bubble{max-width:85%;padding:.5rem .75rem;border-radius:.75rem;font-size:.875rem;line-height:1.5;word-wrap:break-word;}\n" +
+      ".sofia-bubble{max-width:85%;padding:.5rem .75rem;border-radius:.75rem;font-size:.875rem;line-height:1.5;word-wrap:break-word;white-space:pre-line;}\n" +
       ".sofia-bubble p{margin:0 0 .5rem 0;}\n" +
       ".sofia-bubble p:last-child{margin-bottom:0;}\n" +
       ".sofia-bubble ul,.sofia-bubble ol{margin:.25rem 0 .5rem 1.1rem;padding:0;}\n" +
