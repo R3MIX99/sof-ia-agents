@@ -328,7 +328,7 @@ export function WidgetTestChat() {
                       </>
                     )}
                     {appearance && appearance.initialMessages.length > 0 && (
-                      <div className="mt-3 flex flex-col items-center gap-1">
+                      <div className="mt-3 flex w-full flex-col items-start gap-1">
                         {appearance.initialMessages
                           .slice(0, greetingStep)
                           .map((message, index) => (
